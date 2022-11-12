@@ -35,6 +35,39 @@ const create = async (req = request, res = response) => {
   }
 }
 
+const findAll = async (req = request, res = response) => {
+  try {
+    let { from = 0, lot = 10 } = req.query
+    from = from <= 0 || isNaN(from) ? 0 : from - 1
+
+    const query = { status: true }
+
+    const [novelties, total] = await Promise.all([
+      Novelty.find(query).populate('user').skip(from).limit(lot),
+      Novelty.countDocuments(query),
+    ])
+
+    const quantity = novelties.length
+    const pagination = {
+      from: Number(from + 1),
+      lot: Number(lot),
+    }
+
+    res.json({
+      total,
+      quantity,
+      pagination,
+      novelties,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
+
 module.exports = {
   create,
+  findAll,
 }

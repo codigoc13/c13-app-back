@@ -1,8 +1,9 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { create } = require('../controllers/novelty.controller')
+
 const { validateJWT, isRole } = require('../middlewares')
 const { validateFields } = require('../middlewares/validate-fields')
+const { create, findAll } = require('../controllers/novelty.controller')
 
 const router = Router()
 
@@ -17,5 +18,7 @@ router.post(
   ],
   create
 )
+
+router.get('/', findAll)
 
 module.exports = router
