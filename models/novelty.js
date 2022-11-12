@@ -37,6 +37,18 @@ NoveltySchema.methods.toJSON = function () {
   novelty.id = _id
   novelty.createdAt = DateTime.fromISO(createdAt.toISOString())
 
+  const {
+    __v: u__v,
+    _id: u_id,
+    password,
+    status: uStatus,
+    google,
+    ...user
+  } = novelty.user
+  user.id = u_id
+
+  novelty.user = user
+
   return novelty
 }
 
