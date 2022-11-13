@@ -7,7 +7,7 @@ const { validateFields } = require('../middlewares')
 
 const router = Router()
 
-router.get('/', getCareer)
+router.get('/', findAllCareers)
 
 router.post(
     '/',
@@ -25,3 +25,10 @@ router.post(
     ],
     createCareer
   )
+
+
+  router.patch('/id', 
+  updateCareer)
+
+
+  router.delete('/id', deleteCareer)
