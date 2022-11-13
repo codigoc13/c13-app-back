@@ -68,4 +68,4 @@ const CareerSchema = Schema({
 } 
 
 
-module.exports = model('Career', CareerSchema)
+module.exports = model('Careers', CareerSchema)
