@@ -13,7 +13,7 @@ router.post('/',
 ],
 createArticle)
 
-router.findAll('/', createArticle)
+router.get('/', createArticle)
 
 router.put('/:id', [], createArticle)
 
