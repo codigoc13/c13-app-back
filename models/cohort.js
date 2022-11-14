@@ -48,4 +48,6 @@ const CohortSchema = Schema({
   },
 })
 
+CohortSchema.methods.toJSON = function () {}
+
 module.exports = model('Cohort', CohortSchema)
