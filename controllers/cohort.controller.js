@@ -2,6 +2,8 @@ const {request, response} = require('express')
 const {DateTime} = require('luxon')
 const {Cohort} = require('../models')
 
+
+//Mostrar cohortes por paginación
 const getCohorts = async (req = request, res = response) => {
   let {from = 0, lot = 10} = req.query
   from = from <= 0 || isNaN(from) ? 0 : from - 1
