@@ -71,7 +71,38 @@ const findAllArticles = async (req = request, res = response) => {
     }
 }
 
+const updateArticle = async (req = request, res = response) => {
+
+    try {
+        const { id } = req.params
+        const { status, createAt, ...data } = req.body
+        data.title = data.name.toLowerCase().trim()
+    
+        const articleBD = await Article.findOne({ title: data.title})
+        if (articleBD) {
+            return res.status(400).json({
+                msg: `El articulo con ${articleBD.title} ya existe`
+            })
+        }
+    
+        const article = await Article.findByIdAndUpdate(id, data, {
+            new: true,
+        })
+
+        res.status(200).json({
+            article
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            msg: 'Error en el servidor'
+        })
+    }
+}
+
 module.exports = {
     createArticle,
-    findAllArticles
+    findAllArticles,
+    updateArticle,
 }
