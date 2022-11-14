@@ -10,7 +10,7 @@ const createArticle = async (req = request, res = response) => {
     const articleBD = await Article.findOne({ title });
     if (articleBD) {
       return res.status(400).json({
-        msg: ` Ya esxiste un articulo con el titulo ${title}`,
+        msg: `Ya esxiste un articulo con el titulo ${title}`,
       });
     }
 
@@ -22,11 +22,12 @@ const createArticle = async (req = request, res = response) => {
     };
 
     const article = new Article(data);
-    article.save();
+      await article.save();
 
     res.json({
       article,
     });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({
