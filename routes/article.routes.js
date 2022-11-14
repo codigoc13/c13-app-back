@@ -33,7 +33,7 @@ router.delete('/:id',
     validateJWT,
     isRole('ADMIN_ROLE'),
     check('id', 'El id no es valido').isMongoId,
-    check('id'),custom(articleByIdExists),
+    // check('id').custom(articleByIdExists),
     validateFields,
 ], deleteArticle)
 

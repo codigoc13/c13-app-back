@@ -37,8 +37,8 @@ ArticleSchema.methods.toJSON = function () {
   article.id = _id
   article.createdAt = DateTime.fromISO(createdAt.toISOString())
 
-  const { __v: a__v, _id: a_id, password, status: aStatus, google, ...user} = article.user
-  user.id = _id
+  const { __v: u__v, _id: u_id, password, status: uStatus, google, ...user} = article.user
+  user.id = u_id
 
   article.user = user
   
