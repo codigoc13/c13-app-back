@@ -3,7 +3,7 @@ const { check } = require('express-validator')
 
 const { isRole, validateJWT } = require('../middlewares')
 const {validateFields} = require('../middlewares/validate-fields')
-const { createArticle } = require('../controllers/article.controller')
+const { createArticle, findAllArticles } = require('../controllers/article.controller')
 
 const router = Router() 
 
@@ -17,7 +17,7 @@ router.post('/',
 ],
 createArticle)
 
-// router.get('/', findAllArticle)
+router.get('/', findAllArticles)
 
 // router.put('/:id', [], updateArticle)
 
