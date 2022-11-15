@@ -4,19 +4,22 @@ const { Course } = require('../models')
 
 const create = async (req = request, res = response) => {
   try {
-    let { name, description } = req.body
+    let { name, description, duration, maxCapacity, minRequired } = req.body
     name = name.toLowerCase().trim()
 
     const courseDB = await Course.findOne({ name })
     if (courseDB) {
       return res.status(400).json({
-        msg: `Ya existe un curso con ese nombre ${name}`,
+        msg: `Ya existe el curso: ${name}`,
       })
     }
 
     const data = {
       name,
       description,
+      duration,
+      maxCapacity,
+      minRequired,
       user: req.authenticatedUser.id,
       createdAt: DateTime.now(),
     }
@@ -47,7 +50,7 @@ const findAll = async (req = request, res = response) => {
       Course.countDocuments(query),
     ])
 
-    const quantity = novelties.length
+    const quantity = courses.length
     const pagination = {
       from: Number(from + 1),
       lot: Number(lot),

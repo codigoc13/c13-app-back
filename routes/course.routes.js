@@ -14,9 +14,13 @@ router.post(
     isRole('ADMIN_ROLE'),
     check('name', 'El nombre es requerido').not().isEmpty(),
     check('description', 'La descripción es requerida').not().isEmpty(),
-    check('duration ', 'La duración es requerida').not().isEmpty(),
-    check('maxCapacity ', 'La capacidad máxima es requerida').not().isEmpty(),
-    check('minRequired ', 'La capacidad mínima es requerida').not().isEmpty(),
+    check('duration', 'La duración (semanas) es requerida').not().isEmpty(),
+    check('maxCapacity', 'La capacidad de estudiantes máxima es requerida')
+      .not()
+      .isEmpty(),
+    check('minRequired', 'La capacidad mínima de estudiantes  es requerida')
+      .not()
+      .isEmpty(),
     validateFields,
   ],
   create
