@@ -1,4 +1,5 @@
 const { request, response } = require('express')
+const { DateTime } = require('luxon')
 const { Career } = require('../models') 
 
 
@@ -28,8 +29,6 @@ const getCareers = async ( req = request, res = response) =>{
             careers,
 
         })
-
-        
     } catch (error) {
         console.log(error)
         res.status(500).json({
@@ -38,7 +37,43 @@ const getCareers = async ( req = request, res = response) =>{
     }
 }
 
+const createCareer = async (req = request, res = response) =>{
+    try {
+      let { name , status, ...body} = req.body
+
+      name = req.body.name.trim().toUpperCase()
+      const careerDB = await Career.findOne({ name })
+  
+      if (careerDB) {
+        return res.status(400).json({
+          msg: `La categoría ${careerDB.name} ya existe`,
+        })
+      }
+
+      const data = {
+        ...body,
+        name,
+        user: req.authenticatedUser.id,
+        createdAt: DateTime.now()
+      }
+
+      const career = new Career(data)
+      const {_id} = await career.save()
+      const newCareer = await Career.findOne({_id})
+      
+      
+      res.status(201).json({
+        newCareer,
+      })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({
+        msg: 'Error en el servidor',
+      })
+    }
+  }
   
   module.exports = {
-    getCareers,
-  }
+      getCareers,
+      createCareer,
+    }

@@ -2,7 +2,7 @@ const { Router } = require('express')
 const { check } = require('express-validator')
 const { userByIdExists } = require('../helpers/db-validators')
 
-const { validateFields } = require('../middlewares')
+const { validateFields, validateJWT } = require('../middlewares')
 
 
 const router = Router()
@@ -12,6 +12,7 @@ router.get('/', findAllCareers)
 router.post(
     '/',
     [
+        validateJWT,
         check('name', 'El nombre es requerido ').not().isEmpty(),
         check('descrption','La descripcion es requerida').not().isEmpty(),
         check('duration', 'La duracion es requerida').not().isEmpty(),
