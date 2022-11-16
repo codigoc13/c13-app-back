@@ -1,4 +1,4 @@
-const { Category, Role, User, Product, Novelty } = require('../models')
+const { Category, Role, User, Product, Article, Novelty } = require('../models')
 
 /**
  * Validación contra la BD de usuarios
@@ -68,6 +68,16 @@ const noveltytByIdExists = async (id = '') => {
   }
 }
 
+/**
+ * Validar contra la BD de artículos
+ */
+const articleByIdExists = async (id = '') => {
+  const articleExists = await Article.findById(id)
+  if (!articleExists) {
+    throw new Error(`Artículo con id '${id}' no existe en la base de datos `)
+  }
+}
+
 module.exports = {
   isValidRole,
   emailExists,
@@ -76,4 +86,5 @@ module.exports = {
   productByIdExists,
   allowedCollections,
   noveltytByIdExists,
+  articleByIdExists,
 }

@@ -39,6 +39,7 @@ const findAll = async (req = request, res = response) => {
   try {
     let { from = 0, lot = 10 } = req.query
     from = from <= 0 || isNaN(from) ? 0 : from - 1
+    lot = lot <= 0 || isNaN(lot) ? 10 : lot
 
     const query = { status: true }
 
@@ -107,6 +108,7 @@ const deleteById = async (req = request, res = response) => {
       req.params.id,
       {
         status: false,
+        updatedAt: DateTime.now(),
       },
       { new: true }
     )

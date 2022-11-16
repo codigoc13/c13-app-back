@@ -53,7 +53,7 @@ const updateUser = async (req = request, res = response) => {
   })
 }
 
-const deleteUser = async (req = request, res = reponse) => {
+const deleteUser = async (req = request, res = response) => {
   const { id } = req.params
 
   const deletedUser = await User.findByIdAndUpdate(id, { status: false })
