@@ -1,5 +1,6 @@
 const { request, response } = require('express')
 const { DateTime } = require('luxon')
+const { serverErrorHandler } = require('../helpers')
 const { Course } = require('../models')
 
 const create = async (req = request, res = response) => {
@@ -25,16 +26,13 @@ const create = async (req = request, res = response) => {
     }
 
     const course = new Course(data)
-    course.save()
+    await course.save()
 
     res.json({
       course,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
 
@@ -64,10 +62,7 @@ const findAll = async (req = request, res = response) => {
       courses,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
 
