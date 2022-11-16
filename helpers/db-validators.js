@@ -71,7 +71,7 @@ const noveltytByIdExists = async (id = '') => {
 const articleByIdExists = async (id = '') => {
   const articleExists = await Article.findById(id)
   if (!articleExists) {
-    throw new Error(`Articulo con id '${id}' no existe en la base de datos `)
+    throw new Error(`Artículo con id '${id}' no existe en la base de datos `)
   }
 }
 
