@@ -27,15 +27,16 @@ const NoveltySchema = Schema({
     type: Date,
     required: true,
   },
-  updateAt: {
+  updatedAt: {
     type: Date,
   },
 })
 
 NoveltySchema.methods.toJSON = function () {
-  const { __v, _id, status, createdAt, ...novelty } = this.toObject()
+  const { __v, _id, status, createdAt, updatedAt, ...novelty } = this.toObject()
   novelty.id = _id
   novelty.createdAt = DateTime.fromISO(createdAt.toISOString())
+  if (updatedAt) novelty.updatedAt = DateTime.fromISO(updatedAt.toISOString())
 
   const {
     __v: u__v,

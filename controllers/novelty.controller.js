@@ -67,7 +67,49 @@ const findAll = async (req = request, res = response) => {
   }
 }
 
+const update = async (req = request, res = response) => {
+  try {
+    let { title, description } = req.body
+
+    const data = {
+      updatedAt: DateTime.now(),
+    }
+
+    if (title) {
+      title = title.toLowerCase().trim()
+      const noveltyDB = await Novelty.findOne({ title })
+      if (noveltyDB) {
+        return res.status(400).json({
+          msg: `Ya existe una noticia con el título ${title}`,
+        })
+      }
+      data.title = title
+    }
+
+    if (description) data.description = description
+
+    const novelty = await Novelty.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    })
+
+    novelty.save()
+    res.json({
+      novelty,
+    })
+  } catch (error) {
+    handlerErrorServer(error)
+  }
+}
+
+const handlerErrorServer = (error) => {
+  console.log(error)
+  res.status(500).json({
+    msg: 'Error en el servidor',
+  })
+}
+
 module.exports = {
   create,
   findAll,
+  update,
 }
