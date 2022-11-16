@@ -1,5 +1,6 @@
 const { request, response } = require('express')
 const { DateTime } = require('luxon')
+const { serverErrorHandler } = require('../helpers')
 const { Novelty } = require('../models')
 
 const create = async (req = request, res = response) => {
@@ -29,9 +30,7 @@ const create = async (req = request, res = response) => {
     })
   } catch (error) {
     console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    handlerErrorServer(error)
   }
 }
 
@@ -61,10 +60,7 @@ const findAll = async (req = request, res = response) => {
       novelties,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    handlerErrorServer(error)
   }
 }
 
@@ -98,7 +94,7 @@ const update = async (req = request, res = response) => {
       novelty,
     })
   } catch (error) {
-    handlerErrorServer(error)
+    serverErrorHandler(error, res)
   }
 }
 
@@ -118,13 +114,6 @@ const deleteById = async (req = request, res = response) => {
   } catch (error) {
     handlerErrorServer(error)
   }
-}
-
-const handlerErrorServer = (error) => {
-  console.log(error)
-  res.status(500).json({
-    msg: 'Error en el servidor',
-  })
 }
 
 module.exports = {
