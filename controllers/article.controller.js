@@ -6,6 +6,7 @@ const createArticle = async (req = request, res = response) => {
   try {
     let { title, description } = req.body
     title = title.toLowerCase().trim()
+    description = description.toLowerCase().trim()
 
     const articleBD = await Article.findOne({ title })
     if (articleBD) {
@@ -71,14 +72,13 @@ const findAllArticles = async (req = request, res = response) => {
 //   try {
 //     const { id } = req.params
 //     // Id exite en la BD - validar
-
 //     const { status, createAt, ...data } = req.body
 //     data.title = data.name.toLowerCase().trim()
 
 //     const articleBD = await Article.findOne({ title: data.title })
 //     if (articleBD) {
 //       return res.status(400).json({
-//         msg: `El articulo con ${articleBD.title} ya existe`,
+//         msg: `El artículo con ${articleBD.title} ya existe`,
 //       })
 //     }
 
@@ -89,6 +89,7 @@ const findAllArticles = async (req = request, res = response) => {
 //     res.status(200).json({
 //       article,
 //     })
+
 //   } catch (error) {
 //     console.log(error)
 //     res.status(500).json({
@@ -97,34 +98,27 @@ const findAllArticles = async (req = request, res = response) => {
 //   }
 // }
 
-// const deleteArticle = async (req = request, res = response) => {
-//   try {
-//     const { id } = req.params
+const deleteArticle = async (req = request, res = response) => {
+  try {
+    const { id } = req.params
 
-//     const deleteArticle = await Article.findByIdAndDelete(
-//       id,
-//       {
-//         status: false,
-//       },
-//       {
-//         new: true,
-//       }
-//     )
+    const deleteArticle = await Article.findByIdAndDelete(id, { status: false })
+      
+    res.status(200).json({
+      deleteArticle,
+    })
 
-//     res.status(200).json({
-//       deleteArticle,
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({
-//       msg: 'Error en el servidor',
-//     })
-//   }
-// }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
 
 module.exports = {
   createArticle,
   findAllArticles,
   // updateArticle,
-  // deleteArticle,
+  deleteArticle,
 }
