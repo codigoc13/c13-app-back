@@ -3,6 +3,8 @@ const { check } = require('express-validator')
 
 const { isRole, validateJWT } = require('../middlewares')
 const { validateFields } = require('../middlewares/validate-fields')
+const { articleByIdExists } = require('../helpers/db-validators')
+
 const {
   createArticle,
   findAllArticles,
@@ -38,16 +40,16 @@ router.get('/', findAllArticles)
 //   updateArticle
 // )
 
-// router.delete(
-//   '/:id',
-//   [
-//     validateJWT,
-//     isRole('ADMIN_ROLE'),
-//     check('id', 'El id no es valido').isMongoId,
-//     // check('id').custom(articleByIdExists),
-//     validateFields,
-//   ],
-//   deleteArticle
-// )
+router.delete(
+  '/:id',
+  [
+    validateJWT,
+    isRole('ADMIN_ROLE'),
+    check('id', 'El id no es valido').isMongoId(),
+    check('id').custom(articleByIdExists),
+    validateFields,
+  ],
+  deleteArticle
+)
 
 module.exports = router
