@@ -6,10 +6,10 @@ const { validateFields } = require('../middlewares/validate-fields')
 const { articleByIdExists } = require('../helpers/db-validators')
 
 const {
-  createArticle,
-  findAllArticles,
-  updateArticle,
-  deleteArticle,
+  create,
+  findAll,
+  update,
+  deleteById,
 } = require('../controllers/article.controller')
 
 const router = Router()
@@ -23,33 +23,27 @@ router.post(
     check('description', 'La descripción es requerida').not().isEmpty(),
     validateFields,
   ],
-  createArticle
+  create
 )
 
-router.get('/', findAllArticles)
+router.get('/', findAll)
 
-// router.put(
-//   '/:id',
-//   [
-//     validateJWT,
-//     check('id', 'El Id no es valido').isMongoId(),
-//     check('title', 'El título es requerido').not().isEmpty(),
-//     check('description', 'La descripción es necesaria').not().isEmpty(),
-//     validateFields,
-//   ],
-//   updateArticle
-// )
-
-router.delete(
+router.patch(
   '/:id',
   [
     validateJWT,
     isRole('ADMIN_ROLE'),
-    check('id', 'El id no es valido').isMongoId(),
+    check('id', 'El id debe ser valido de Mongo').isMongoId(),
     check('id').custom(articleByIdExists),
     validateFields,
   ],
-  deleteArticle
+  update
+)
+
+router.delete(
+  '/:id',
+  [validateJWT, isRole('ADMIN_ROLE'), validateFields],
+  deleteById
 )
 
 module.exports = router

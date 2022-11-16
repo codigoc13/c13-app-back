@@ -2,7 +2,7 @@ const { request, response } = require('express')
 const { DateTime } = require('luxon')
 const { Article } = require('../models')
 
-const createArticle = async (req = request, res = response) => {
+const create = async (req = request, res = response) => {
   try {
     let { title, description } = req.body
     title = title.toLowerCase().trim()
@@ -36,7 +36,7 @@ const createArticle = async (req = request, res = response) => {
   }
 }
 
-const findAllArticles = async (req = request, res = response) => {
+const findAll = async (req = request, res = response) => {
   try {
     let { from = 0, lot = 10 } = req.query
     from = from <= 0 || isNaN(from) ? 0 : from - 1
@@ -68,46 +68,57 @@ const findAllArticles = async (req = request, res = response) => {
   }
 }
 
-// const updateArticle = async (req = request, res = response) => {
-//   try {
-//     const { id } = req.params
-//     // Id exite en la BD - validar
-//     const { status, createAt, ...data } = req.body
-//     data.title = data.name.toLowerCase().trim()
+const update = async (req = request, res = response) => {
+  try {
+    let { title, description } = req.body
 
-//     const articleBD = await Article.findOne({ title: data.title })
-//     if (articleBD) {
-//       return res.status(400).json({
-//         msg: `El artículo con ${articleBD.title} ya existe`,
-//       })
-//     }
+    const data = {
+      description,
+      updatedAt: DateTime.now(),
+    }
 
-//     const article = await Article.findByIdAndUpdate(id, data, {
-//       new: true,
-//     })
+    if (title) {
+      title = title.toLowerCase().trim()
 
-//     res.status(200).json({
-//       article,
-//     })
+      const articleBD = await Article.findOne({ name: data.name })
+      if (articleBD) {
+        return res.status(400).json({
+          msg: `El artículo ${articleBD.name} ya existe`,
+        })
+      }
+      data.title = title
+    }
 
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({
-//       msg: 'Error en el servidor',
-//     })
-//   }
-// }
+    if (description) data.description = description
 
-const deleteArticle = async (req = request, res = response) => {
+    const article = Article.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    })
+
+    response.json({
+      article,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
+
+const deleteById = async (req = request, res = response) => {
   try {
     const { id } = req.params
 
-    const deleteArticle = await Article.findByIdAndDelete(id, { status: false })
-      
+    const deleteArticle = await Article.findByIdAndUpdate(
+      id,
+      { status: false },
+      { new: true }
+    )
+
     res.status(200).json({
       deleteArticle,
     })
-
   } catch (error) {
     console.log(error)
     res.status(500).json({
@@ -117,8 +128,8 @@ const deleteArticle = async (req = request, res = response) => {
 }
 
 module.exports = {
-  createArticle,
-  findAllArticles,
-  // updateArticle,
-  deleteArticle,
+  create,
+  findAll,
+  update,
+  deleteById,
 }

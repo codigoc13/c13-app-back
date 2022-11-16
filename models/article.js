@@ -27,23 +27,33 @@ const ArticleSchema = Schema({
     type: Date,
     required: true,
   },
-  updateAt: {
+  updatedAt: {
     type: Date,
   },
 })
 
 ArticleSchema.methods.toJSON = function () {
-  const { __v, _id, status, createdAt, ...article } = this.toObject()
+  const { __v, _id, status, createdAt, updatedAt, ...article } = this.toObject()
   article.id = _id
   article.createdAt = DateTime.fromISO(createdAt.toISOString())
 
-  const { __v: u__v, _id: u_id, password, status: uStatus, google, ...user} = article.user
+  if (updatedAt) {
+    article.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+  }
+
+  const {
+    __v: u__v,
+    _id: u_id,
+    password,
+    status: uStatus,
+    google,
+    ...user
+  } = article.user
   user.id = u_id
 
   article.user = user
-  
-  return article 
 
+  return article
 }
 
 module.exports = model('Article', ArticleSchema)
