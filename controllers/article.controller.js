@@ -80,10 +80,10 @@ const update = async (req = request, res = response) => {
     if (title) {
       title = title.toLowerCase().trim()
 
-      const articleBD = await Article.findOne({ name: data.name })
+      const articleBD = await Article.findOne({ title: data.title })
       if (articleBD) {
         return res.status(400).json({
-          msg: `El artículo ${articleBD.name} ya existe`,
+          msg: `El artículo ${articleBD.title} ya existe`,
         })
       }
       data.title = title
@@ -95,7 +95,7 @@ const update = async (req = request, res = response) => {
       new: true,
     })
 
-    response.json({
+    res.json({
       article,
     })
   } catch (error) {

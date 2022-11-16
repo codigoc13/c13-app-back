@@ -59,7 +59,7 @@ const allowedCollections = (collection = '', collections = []) => {
 }
 
 /**
- * Validar contra la BD artículos
+ * Validar contra la BD de artículos
  */
 
 const articleByIdExists = async (id = '') => {
