@@ -4,6 +4,7 @@ const Role = require('./role')
 const User = require('./user')
 const Career = require('./career')
 const Invoice = require('./invoice')
+const Course = require('./course')
 
 module.exports = {
   Category,
@@ -12,4 +13,5 @@ module.exports = {
   User,
   Invoice,
   Career,
+  Course,
 }
