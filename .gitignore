@@ -1,7 +1,7 @@
 /node_modules
 .env
 .vscode
-noveltyborrar.js
+
 uploads/products/**.*
 uploads/users/**.*
 uploads/imgs/**.*
