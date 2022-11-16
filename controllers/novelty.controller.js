@@ -101,6 +101,23 @@ const update = async (req = request, res = response) => {
   }
 }
 
+const deleteById = async (req = request, res = response) => {
+  try {
+    const novelty = await Novelty.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: false,
+      },
+      { new: true }
+    )
+    res.json({
+      novelty,
+    })
+  } catch (error) {
+    handlerErrorServer(error)
+  }
+}
+
 const handlerErrorServer = (error) => {
   console.log(error)
   res.status(500).json({
@@ -112,4 +129,5 @@ module.exports = {
   create,
   findAll,
   update,
+  deleteById,
 }
