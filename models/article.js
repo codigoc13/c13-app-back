@@ -34,6 +34,7 @@ const ArticleSchema = Schema({
 
 ArticleSchema.methods.toJSON = function () {
   const { __v, _id, status, createdAt, updatedAt, ...article } = this.toObject()
+
   article.id = _id
   article.createdAt = DateTime.fromISO(createdAt.toISOString())
 
