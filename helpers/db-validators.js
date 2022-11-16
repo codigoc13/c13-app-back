@@ -59,13 +59,13 @@ const allowedCollections = (collection = '', collections = []) => {
 }
 
 /**
- * Validar contra la BD artículos
+ * Validar contra la BD de artículos
  */
 
 const articleByIdExists = async (id = '') => {
   const articleExists = await Article.findById(id)
   if (!articleExists) {
-    throw new Error(`Articulo con id '${id}' no existe en la base de datos `)
+    throw new Error(`Artículo con id '${id}' no existe en la base de datos `)
   }
 }
 
