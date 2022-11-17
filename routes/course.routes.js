@@ -3,7 +3,13 @@ const { check } = require('express-validator')
 
 const { validateJWT, isRole } = require('../middlewares')
 const { validateFields } = require('../middlewares/validate-fields')
-const { create, findAll } = require('../controllers/course.controller.js')
+const {
+  create,
+  findAll,
+  update,
+  deleteById,
+} = require('../controllers/course.controller.js')
+const { courseByIdExists } = require('../helpers/db-validators')
 
 const router = Router()
 
@@ -27,5 +33,29 @@ router.post(
 )
 
 router.get('/', findAll)
+
+router.patch(
+  '/:id',
+  [
+    validateJWT,
+    isRole('ADMIN_ROLE'),
+    check('id', 'El id debe ser válido de Mongo').isMongoId(),
+    check('id').custom(courseByIdExists),
+    validateFields,
+  ],
+  update
+)
+
+router.delete(
+  '/:id',
+  [
+    validateJWT,
+    isRole('ADMIN_ROLE'),
+    check('id', 'El id debe ser válido de Mongo').isMongoId(),
+    check('id').custom(courseByIdExists),
+    validateFields,
+  ],
+  deleteById
+)
 
 module.exports = router
