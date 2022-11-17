@@ -1,4 +1,12 @@
-const { Category, Role, User, Product, Article, Novelty } = require('../models')
+const {
+  Category,
+  Role,
+  User,
+  Product,
+  Article,
+  Novelty,
+  Course,
+} = require('../models')
 
 /**
  * Validación contra la BD de usuarios
