@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose')
 
-const CareerSchema = Schema({
+const CourseSchema = Schema({
   name: {
     type: String,
     required: [true, 'El nombre es requerido'],
@@ -25,10 +25,6 @@ const CareerSchema = Schema({
   imgUrl: {
     type: String,
   },
-  courses: {
-    type: [Schema.Types.ObjectId],
-    ref: 'Course',
-  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -48,4 +44,4 @@ const CareerSchema = Schema({
   },
 })
 
-module.exports = model('Career', CareerSchema)
+module.exports = model('Course', CourseSchema)
