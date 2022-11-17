@@ -49,7 +49,7 @@ CourseSchema.methods.toJSON = function () {
   const { __v, _id, status, createdAt, updatedAt, ...course } = this.toObject()
   course.id = _id
   course.createdAt = DateTime.fromISO(createdAt.toISOString())
-  if (updatedAt) novelty.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+  if (updatedAt) course.updatedAt = DateTime.fromISO(updatedAt.toISOString())
 
   const {
     __v: u__v,

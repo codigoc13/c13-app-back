@@ -78,6 +78,13 @@ const articleByIdExists = async (id = '') => {
   }
 }
 
+const courseByIdExists = async (id = '') => {
+  const courseExists = await Course.findById(id)
+  if (!courseExists) {
+    throw new Error(`Curso con id '${id}' no existe en la base de datos`)
+  }
+}
+
 module.exports = {
   isValidRole,
   emailExists,
@@ -87,4 +94,5 @@ module.exports = {
   allowedCollections,
   noveltytByIdExists,
   articleByIdExists,
+  courseByIdExists,
 }
