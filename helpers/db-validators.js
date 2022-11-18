@@ -1,4 +1,13 @@
-const { Category, Role, User, Product, Article, Novelty } = require('../models')
+const {
+  Category,
+  Role,
+  User,
+  Product,
+  Article,
+  Novelty,
+  Course,
+  Career,
+} = require('../models')
 
 /**
  * Validación contra la BD de usuarios
@@ -31,6 +40,17 @@ const categoryByIdExists = async (id = '') => {
   const categoryExists = await Category.findById(id)
   if (!categoryExists) {
     throw new Error(`Categoría con id '${id}' no existe en la base de datos`)
+  }
+}
+
+/**
+ * Validar contra la BD de artículos
+ */
+
+const careerByIdExists = async (id = '') => {
+  const careerExists = await Career.findById(id)
+  if (!careerExists) {
+    throw new Error(`La carrera con id '${id}' no existe en la base de datos `)
   }
 }
 
@@ -71,11 +91,17 @@ const noveltytByIdExists = async (id = '') => {
 /**
  * Validar contra la BD de artículos
  */
-
 const articleByIdExists = async (id = '') => {
   const articleExists = await Article.findById(id)
   if (!articleExists) {
     throw new Error(`Artículo con id '${id}' no existe en la base de datos `)
+  }
+}
+
+const courseByIdExists = async (id = '') => {
+  const courseExists = await Course.findById(id)
+  if (!courseExists) {
+    throw new Error(`Curso con id '${id}' no existe en la base de datos`)
   }
 }
 
@@ -86,6 +112,8 @@ module.exports = {
   categoryByIdExists,
   productByIdExists,
   allowedCollections,
+  careerByIdExists,
   noveltytByIdExists,
   articleByIdExists,
+  courseByIdExists,
 }

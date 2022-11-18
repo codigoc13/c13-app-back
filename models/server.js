@@ -17,7 +17,8 @@ class Server {
       uploads: '/api/uploads',
       users: '/api/users',
       invoices: '/api/invoices',
-      cohorts: '/api/cohorts',
+      careers: '/api/careers',
+      courses: '/api/courses',
       courses: '/api/courses',
       novelties: '/api/novelties',
       articles: '/api/articles',
@@ -65,9 +66,9 @@ class Server {
     this.app.use(this.paths.uploads, require('../routes/upload.routes'))
     this.app.use(this.paths.users, require('../routes/user.routes'))
     this.app.use(this.paths.invoices, require('../routes/invoice.routes'))
-    this.app.use(this.paths.cohorts, require('../routes/cohort.routes'))
+    this.app.use(this.paths.careers, require('../routes/career.routes'))
     this.app.use(this.paths.courses, require('../routes/course.routes'))
-    this.app.use(this.paths.novelties, require('../routes/novelties.routes'))
+    this.app.use(this.paths.courses, require('../routes/course.routes'))
     this.app.use(this.paths.novelties, require('../routes/novelty.routes'))
     this.app.use(this.paths.articles, require('../routes/article.routes'))
   }

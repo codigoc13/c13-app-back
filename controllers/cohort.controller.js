@@ -3,32 +3,6 @@ const { isObjectId } = require('../helpers/validate-object-id')
 const { DateTime } = require('luxon')
 const { Cohort, User, Career } = require('../models')
 
-const getCohorts = async (req = request, res = response) => {
-  let { from = 0, lot = 10 } = req.query
-  from = from <= 0 || isNaN(from) ? 0 : from - 1
-  lot = lot <= 0 || isNaN(lot) ? 10 : lot
-
-  const query = { status: true }
-
-  const [cohorts, total] = await Promise.all([
-    Cohort.find(query).populate('user').skip(from).limit(lot),
-    Cohort.countDocuments(query),
-  ])
-
-  const quantity = cohorts.length
-  const pagination = {
-    from: Number(from + 1),
-    lot: Number(lot),
-  }
-
-  res.status(200).json({
-    total,
-    quantity,
-    pagination,
-    cohorts,
-  })
-}
-
 const createCohort = async (req = request, res = response) => {
   try {
     let { code, status, ...body } = req.body
@@ -140,6 +114,32 @@ const createCohort = async (req = request, res = response) => {
       msg: 'Error en el servidor',
     })
   }
+}
+
+const getCohorts = async (req = request, res = response) => {
+  let { from = 0, lot = 10 } = req.query
+  from = from <= 0 || isNaN(from) ? 0 : from - 1
+  lot = lot <= 0 || isNaN(lot) ? 10 : lot
+
+  const query = { status: true }
+
+  const [cohorts, total] = await Promise.all([
+    Cohort.find(query).populate('user').skip(from).limit(lot),
+    Cohort.countDocuments(query),
+  ])
+
+  const quantity = cohorts.length
+  const pagination = {
+    from: Number(from + 1),
+    lot: Number(lot),
+  }
+
+  res.status(200).json({
+    total,
+    quantity,
+    pagination,
+    cohorts,
+  })
 }
 
 module.exports = { createCohort, getCohorts }

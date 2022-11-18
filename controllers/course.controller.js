@@ -1,7 +1,7 @@
 const { request, response } = require('express')
 const { DateTime } = require('luxon')
-const { serverErrorHandler } = require('../helpers')
 const { Course } = require('../models')
+const { serverErrorHandler } = require('../helpers')
 
 const create = async (req = request, res = response) => {
   try {
@@ -66,7 +66,64 @@ const findAll = async (req = request, res = response) => {
   }
 }
 
+const update = async (req = request, res = response) => {
+  try {
+    let { name, description, duration, maxCapacity, minRequired } = req.body
+
+    const data = {
+      updatedAt: DateTime.now(),
+    }
+
+    if (name) {
+      name = name.toLowerCase().trim()
+
+      const courseDB = await Course.findOne({ name })
+      if (courseDB) {
+        return res.status(400).json({
+          msg: `Ya existe el curso: ${name}`,
+        })
+      }
+      data.name = name
+    }
+
+    if (description) data.description = description
+    if (duration) data.duration = duration
+    if (maxCapacity) data.maxCapacity = maxCapacity
+    if (minRequired) data.minRequired = minRequired
+
+    const course = await Course.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    })
+
+    res.json({
+      course,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
+}
+
+const deleteById = async (req = request, res = response) => {
+  try {
+    const course = await Course.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: false,
+        updatedAt: DateTime.now(),
+      },
+      { new: true }
+    )
+    res.json({
+      course,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
+}
+
 module.exports = {
   create,
   findAll,
+  update,
+  deleteById,
 }
