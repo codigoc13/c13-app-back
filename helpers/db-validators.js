@@ -68,6 +68,10 @@ const noveltytByIdExists = async (id = '') => {
   }
 }
 
+/**
+ * Validar contra la BD de artículos
+ */
+
 const articleByIdExists = async (id = '') => {
   const articleExists = await Article.findById(id)
   if (!articleExists) {
