@@ -1,5 +1,7 @@
 const { request, response } = require('express')
 const { DateTime } = require('luxon')
+
+const { serverErrorHandler } = require('../helpers/server-error-handler')
 const { Career } = require('../models')
 
 const getCareers = async (req = request, res = response) => {
@@ -32,10 +34,7 @@ const getCareers = async (req = request, res = response) => {
       careers,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
 
@@ -61,55 +60,19 @@ const createCareer = async (req = request, res = response) => {
     }
 
     const career = new Career(data)
-    const { _id } = await career.save()
-    const newCareer = await Career.findOne({ _id })
+    await career.save()
 
     res.status(201).json({
-      newCareer,
+      career,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
-// const updateCareer = async (req = request, res = response) => {
-//   try {
-//     const { id } = req.params
-//     let { status, createdAt, ...body } = req.body
-//     const name = req.body.name.toLowerCase().trim()
-
-//     const careerDB = await Career.findOne({ name })
-//     if (careerDB) {
-//       return res.status(400).json({
-//         msg: `La carrera ${careerDB.name} ya existe`,
-//       })
-//     }
-
-//     const data = {
-//       ...body,
-//       name,
-//       user: req.authenticatedUser.id,
-//       modifiedAt: DateTime.now(),
-//     }
-
-//     const career = await Career.findByIdAndUpdate(id, data, { new: true })
-
-//     res.status(200).json({
-//       career,
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({
-//       msg: 'Error en el servidor',
-//     })
-//   }
-// }
 
 const updateCareer = async (req = request, res = response) => {
   try {
-    let { name, description } = req.body
+    let { name, description, duration, maxCapacity, minRequired } = req.body
 
     const data = {
       updatedAt: DateTime.now(),
@@ -128,6 +91,10 @@ const updateCareer = async (req = request, res = response) => {
     }
 
     if (description) data.description = description.toLowerCase().trim()
+    if (duration) data.duration = duration
+    if (maxCapacity) data.maxCapacity = maxCapacity
+    if (minRequired) data.minRequired = minRequired
+
     const career = await Career.findByIdAndUpdate(req.params.id, data, {
       new: true,
     })
@@ -136,19 +103,9 @@ const updateCareer = async (req = request, res = response) => {
       career,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
-
-// const handlerErrorServer = (error) => {
-//   console.log(error)
-//   res.status(500).json({
-//     msg: 'Error en el Servidor',
-//   })
-// }
 
 const deleteCareer = async (req = request, res = response) => {
   try {
@@ -163,10 +120,7 @@ const deleteCareer = async (req = request, res = response) => {
       deleteCareer,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
 
