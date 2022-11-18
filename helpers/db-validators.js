@@ -33,14 +33,15 @@ const categoryByIdExists = async (id = '') => {
     throw new Error(`Categoría con id '${id}' no existe en la base de datos`)
   }
 }
+
 /**
- * validacion contra la BD de carreras
+ * Validar contra la BD de artículos
  */
 
 const careerByIdExists = async (id = '') => {
   const careerExists = await Career.findById(id)
   if (!careerExists) {
-    throw new Error(`Carrera con id '${id}' no existe en la base de datos`)
+    throw new Error(`La carrera con id '${id}' no existe en la base de datos `)
   }
 }
 

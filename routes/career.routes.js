@@ -4,10 +4,11 @@ const {
   getCareers,
   createCareer,
   deleteCareer,
+  updateCareer,
 } = require('../controllers/career.controller')
 const { userByIdExists, careerByIdExists } = require('../helpers/db-validators')
 
-const { validateFields, validateJWT } = require('../middlewares')
+const { validateFields, validateJWT, isRole } = require('../middlewares')
 
 const router = Router()
 
@@ -42,23 +43,17 @@ router.patch(
   '/:id',
   [
     validateJWT,
-    check('id', 'El ID no es válido').isMongoId(),
+    isRole('ADMIN_ROLE'),
+    check('id', 'El id debe ser valido de Mongo').isMongoId(),
     check('id').custom(careerByIdExists),
-    check('name', 'El nombre es obligatorio').not().isEmpty(),
     validateFields,
   ],
-  updateCategory
+  updateCareer
 )
 
 router.delete(
-  '/id',
-  [
-    validateJWT,
-    isRole('ADMIN_ROLE'),
-    check('id', 'El ID no es válido').isMongoId(),
-    check('id').custom(careerByIdExists),
-    validateFields,
-  ],
+  '/:id',
+  [validateJWT, isRole('ADMIN_ROLE'), validateFields],
   deleteCareer
 )
 
