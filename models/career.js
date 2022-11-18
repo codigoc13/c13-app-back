@@ -1,33 +1,33 @@
-const {Schema, model} = require('mongoose')
+const { Schema, model } = require('mongoose')
 
-const CohortSchema = Schema({
-  code: {
+const CareerSchema = Schema({
+  name: {
     type: String,
-    required: true,
-    // Combinación automática de año, carrera, etc. Por afinar.
+    required: [true, 'El nombre es requerido'],
   },
   description: {
     type: String,
+    required: [true, 'La descripción es requerida'],
   },
   duration: {
     type: Number,
     required: [true, 'La duración es requerida'],
     // medida de tiempo: semanas
   },
-  quantity: {
+  maxCapacity: {
     type: Number,
-    required: [true, 'La cantidad es requerida'],
+    required: [true, 'La capacidad máxima es requerida'],
+  },
+  minRequired: {
+    type: Number,
+    required: [true, 'El mínimo es requerido '],
   },
   imgUrl: {
     type: String,
   },
-  careers: {
+  courses: {
     type: [Schema.Types.ObjectId],
-    ref: 'Career',
-  },
-  participants: {
-    type: [Schema.Types.ObjectId],
-    ref: 'User',
+    ref: 'Course',
   },
   user: {
     type: Schema.Types.ObjectId,
@@ -48,6 +48,4 @@ const CohortSchema = Schema({
   },
 })
 
-// CohortSchema.methods.toJSON = function () {}
-
-module.exports = model('Cohort', CohortSchema)
+module.exports = model('Career', CareerSchema)
