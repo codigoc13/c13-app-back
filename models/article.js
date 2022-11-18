@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon')
 const { Schema, model } = require('mongoose')
 
 const ArticleSchema = Schema({
@@ -30,5 +31,19 @@ const ArticleSchema = Schema({
     type: Date,
   },
 })
+
+ArticleSchema.methods.toJSON = function () {
+  const { __v, _id, status, createdAt, ...article } = this.toObject()
+  article.id = _id
+  article.createdAt = DateTime.fromISO(createdAt.toISOString())
+
+  const { __v: a__v, _id: a_id, password, status: aStatus, google, ...user} = article.user
+  user.id = _id
+
+  article.user = user
+  
+  return article 
+
+}
 
 module.exports = model('Article', ArticleSchema)

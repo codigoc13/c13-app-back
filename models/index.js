@@ -6,6 +6,7 @@ const Invoice = require('./invoice')
 const Cohort = require('./cohort')
 const Course = require('./course')
 const Novelty = require('./novelty')
+const Article = require('./article')
 
 module.exports = {
   Category,
@@ -16,4 +17,5 @@ module.exports = {
   Cohort,
   Course,
   Novelty,
+  Article,
 }
