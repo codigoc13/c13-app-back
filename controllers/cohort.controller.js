@@ -5,8 +5,10 @@ const { Cohort, User, Career } = require('../models')
 
 const createCohort = async (req = request, res = response) => {
   try {
-    let { code, status, ...body } = req.body
+    let { code, ...body } = req.body
+    const { careers: careersIds, users: usersIds } = req.body
 
+    code = code.toUpperCase().trim()
     const codeBD = await Cohort.findOne({ code })
     if (codeBD) {
       return res.status(400).json({
@@ -15,18 +17,13 @@ const createCohort = async (req = request, res = response) => {
     }
 
     const data = {
-      code,
       ...body,
+      code,
       careers: [],
       users: [],
-      //   user: req.authenticatedUser.id,
+      user: req.authenticatedUser.id,
       createdAt: DateTime.now(),
     }
-    const cohort = new Cohort(data)
-    const { _id } = await cohort.save()
-    const newCohort = await Cohort.findById({ _id })
-
-    const { careers: careersIds, users: usersIds } = req.body
 
     if (!isObjectId(careersIds)) {
       return res.status(400).json({
@@ -103,10 +100,13 @@ const createCohort = async (req = request, res = response) => {
       })
     }
 
+    const cohort = new Cohort(data)
+    await cohort.save()
+
     data.users = usersDB
 
     res.status(201).json({
-      newCohort,
+      cohort,
     })
   } catch (error) {
     console.log(error)
