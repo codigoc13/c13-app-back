@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose')
+const { Schema, model } = require('mongoose')
 
 const CohortSchema = Schema({
   code: {
@@ -48,6 +48,14 @@ const CohortSchema = Schema({
   },
 })
 
+<<<<<<< HEAD
 // CohortSchema.methods.toJSON = function () {}
+=======
+CohortSchema.methods.toJSON = function () {
+  const { __v, _id, status, ...cohort } = this.toObject()
+
+  return cohort
+}
+>>>>>>> e366dde (Se evita el null en modelo y se modifica el controller)
 
 module.exports = model('Cohort', CohortSchema)

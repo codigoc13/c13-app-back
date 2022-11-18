@@ -1,16 +1,14 @@
-const {request, response} = require('express')
+const { request, response } = require('express')
 const { isObjectId } = require('../helpers/validate-object-id')
-const {DateTime} = require('luxon')
-const {Cohort, User, Career} = require('../models')
+const { DateTime } = require('luxon')
+const { Cohort, User, Career } = require('../models')
 
-
-//Mostrar cohortes por paginación
 const getCohorts = async (req = request, res = response) => {
-  let {from = 0, lot = 10} = req.query
+  let { from = 0, lot = 10 } = req.query
   from = from <= 0 || isNaN(from) ? 0 : from - 1
   lot = lot <= 0 || isNaN(lot) ? 10 : lot
 
-  const query = {status: true}
+  const query = { status: true }
 
   const [cohorts, total] = await Promise.all([
     Cohort.find(query).populate('user').skip(from).limit(lot),
@@ -22,22 +20,20 @@ const getCohorts = async (req = request, res = response) => {
     from: Number(from + 1),
     lot: Number(lot),
   }
-  // const cohorts = await Cohort.find({status: true})
 
   res.status(200).json({
     total,
     quantity,
     pagination,
-    cohorts: cohorts.length,
     cohorts,
   })
 }
 
 const createCohort = async (req = request, res = response) => {
   try {
-    let {code, status, ...body} = req.body
+    let { code, status, ...body } = req.body
 
-    const codeBD = await Cohort.findOne({code})
+    const codeBD = await Cohort.findOne({ code })
     if (codeBD) {
       return res.status(400).json({
         msg: `La cohorte con el código ${codeBD.code} ya existe`,
@@ -47,17 +43,16 @@ const createCohort = async (req = request, res = response) => {
     const data = {
       code,
       ...body,
-      careers:[],
-      users:[],
+      careers: [],
+      users: [],
       //   user: req.authenticatedUser.id,
       createdAt: DateTime.now(),
     }
     const cohort = new Cohort(data)
-    const {_id} = await cohort.save()
+    const { _id } = await cohort.save()
+    const newCohort = await Cohort.findById({ _id })
 
-    const newCohort = await Cohort.findById({_id})
-
-    const {careers: careersIds, users: usersIds} = req.body
+    const { careers: careersIds, users: usersIds } = req.body
 
     if (!isObjectId(careersIds)) {
       return res.status(400).json({
@@ -107,8 +102,7 @@ const createCohort = async (req = request, res = response) => {
       })
     }
     data.careers = careersDB
-   
-  
+
     const usersDB = await User.find({ _id: { $in: usersIds } })
     const usersIdsDB = usersDB.map((userDB) => userDB._id.valueOf())
     const usersIdsNotFound = usersIds.filter((userId) => {
@@ -128,7 +122,6 @@ const createCohort = async (req = request, res = response) => {
       return userDB.role !== 'STUDENT_ROLE'
     })
 
-    
     if (usersWrongRole.length > 0) {
       return res.status(400).json({
         msg: 'Los siguiente usuarios no tiene rol de estudiante',
@@ -149,4 +142,4 @@ const createCohort = async (req = request, res = response) => {
   }
 }
 
-module.exports = {createCohort, getCohorts}
+module.exports = { createCohort, getCohorts }
