@@ -40,7 +40,7 @@ router.patch(
     validateJWT,
     isRole('ADMIN_ROLE'),
     check('id', 'El id debe ser válido de Mongo').isMongoId(),
-    check('id').custom(courseByIdExists),
+    // check('id').custom(courseByIdExists),
     validateFields,
   ],
   update

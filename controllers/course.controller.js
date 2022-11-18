@@ -32,7 +32,7 @@ const create = async (req = request, res = response) => {
       course,
     })
   } catch (error) {
-    serverErrorHandler(error)
+    serverErrorHandler(error, res)
   }
 }
 
@@ -62,7 +62,7 @@ const findAll = async (req = request, res = response) => {
       courses,
     })
   } catch (error) {
-    serverErrorHandler(error)
+    serverErrorHandler(error, res)
   }
 }
 
@@ -95,12 +95,11 @@ const update = async (req = request, res = response) => {
       new: true,
     })
 
-    course.save()
     res.json({
       course,
     })
   } catch (error) {
-    serverErrorHandler(error)
+    serverErrorHandler(error, res)
   }
 }
 
@@ -118,7 +117,7 @@ const deleteById = async (req = request, res = response) => {
       course,
     })
   } catch (error) {
-    handlerErrorServer(error)
+    serverErrorHandler(error, res)
   }
 }
 
