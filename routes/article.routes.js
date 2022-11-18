@@ -3,7 +3,7 @@ const { check } = require('express-validator')
 
 const { isRole, validateJWT } = require('../middlewares')
 const {validateFields} = require('../middlewares/validate-fields')
-const { createArticle, findAllArticles, updateArticle } = require('../controllers/article.controller')
+const { createArticle, findAllArticles, updateArticle, deleteArticle } = require('../controllers/article.controller')
 
 const router = Router() 
 
@@ -28,6 +28,13 @@ router.put('/:id',
 validateFields,
 ], updateArticle)
 
-// router.delete('/:id', [], deleteArticle)
+router.delete('/:id', 
+[
+    validateJWT,
+    isRole('ADMIN_ROLE'),
+    check('id', 'El id no es valido').isMongoId,
+    check('id'),custom(articleByIdExists),
+    validateFields,
+], deleteArticle)
 
 module.exports = router
