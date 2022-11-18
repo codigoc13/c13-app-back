@@ -40,7 +40,7 @@ const CourseSchema = Schema({
     type: Date,
     required: true,
   },
-  updateAt: {
+  updatedAt: {
     type: Date,
   },
 })

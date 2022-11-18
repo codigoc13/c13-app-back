@@ -71,7 +71,7 @@ const update = async (req = request, res = response) => {
     let { name, description, duration, maxCapacity, minRequired } = req.body
 
     const data = {
-      updateAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     }
 
     if (name) {
