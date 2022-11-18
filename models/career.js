@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon')
 const { Schema, model } = require('mongoose')
 
 const CareerSchema = Schema({
@@ -43,9 +44,31 @@ const CareerSchema = Schema({
     type: Date,
     required: true,
   },
-  updateAt: {
+  updatedAt: {
     type: Date,
   },
 })
+
+CareerSchema.methods.toJSON = function () {
+  const { __v, _id, createdAt, updatedAt, status, ...career } = this.toObject()
+  career.id = _id
+  career.createdAt = DateTime.fromISO(createdAt.toISOString())
+
+  if (updatedAt) {
+    career.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+  }
+
+  const { _id: _uId, password, __v: __uV, ...user } = career.user
+  user.id = _uId
+  career.user = user
+
+  career.courses = career.courses.map((course) => {
+    const { _id: c_id, __v: c__v, ...rest } = course
+    rest.id = c_id
+    return rest
+  })
+
+  return career
+}
 
 module.exports = model('Career', CareerSchema)
