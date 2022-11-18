@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const { DateTime } = require('luxon')
 
 const NoveltySchema = Schema({
   title: {
@@ -30,5 +31,13 @@ const NoveltySchema = Schema({
     type: Date,
   },
 })
+
+NoveltySchema.methods.toJSON = function () {
+  const { __v, _id, status, createdAt, ...novelty } = this.toObject()
+  novelty.id = _id
+  novelty.createdAt = DateTime.fromISO(createdAt.toISOString())
+
+  return novelty
+}
 
 module.exports = model('Novelty', NoveltySchema)

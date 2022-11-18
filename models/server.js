@@ -67,6 +67,7 @@ class Server {
     this.app.use(this.paths.cohorts, require('../routes/cohort.routes'))
     this.app.use(this.paths.courses, require('../routes/course.routes'))
     this.app.use(this.paths.novelties, require('../routes/novelties.routes'))
+    this.app.use(this.paths.novelties, require('../routes/novelty.routes'))
   }
 
   listen() {
