@@ -55,6 +55,7 @@ const createCareer = async (req = request, res = response) => {
     const data = {
       ...body,
       name,
+      courses: req.coursesDB,
       user: req.authenticatedUser.id,
       createdAt: DateTime.now(),
     }
@@ -94,6 +95,7 @@ const updateCareer = async (req = request, res = response) => {
     if (duration) data.duration = duration
     if (maxCapacity) data.maxCapacity = maxCapacity
     if (minRequired) data.minRequired = minRequired
+    if (req.coursesDB) data.courses = req.coursesDB
 
     const career = await Career.findByIdAndUpdate(req.params.id, data, {
       new: true,
