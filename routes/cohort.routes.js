@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
-const { createCohort, getCohorts, updateCohort } = require('../controllers/cohort.controller')
+const { createCohort, getCohorts, updateCohort, deleteCohort } = require('../controllers/cohort.controller')
 const { cohortByIdExists } = require('../helpers/db-validators')
 const { validateParticipants } = require('../middlewares/validate-participants')
 const { validateFields, validateJWT, isRole } = require('../middlewares')
@@ -34,5 +34,17 @@ router.patch('/:id', [
   validateParticipants,
   validateFields,
 ], updateCohort)
+
+router.delete(
+  '/:id',
+  [
+    validateJWT,
+    isRole('ADMIN_ROLE'),
+    check('id', 'El id debe ser válido de Mongo').isMongoId(),
+    check('id').custom(cohortByIdExists),
+    validateFields,
+  ],
+  deleteCohort
+)
 
 module.exports = router
