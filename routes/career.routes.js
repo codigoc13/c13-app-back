@@ -19,7 +19,7 @@ router.post(
   [
     validateJWT,
     check('name', 'El nombre es requerido ').not().isEmpty(),
-    check('description', 'La descripcion es requerida').not().isEmpty(),
+    check('description', 'La descripción es requerida').not().isEmpty(),
     check('duration', 'La duracion es requerida').not().isEmpty(),
     check('duration', 'La duracion debe de ser un numero').isNumeric(),
     check('maxCapacity', 'La cantidad maxima es requerida').not().isEmpty(),

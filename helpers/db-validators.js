@@ -7,6 +7,7 @@ const {
   Novelty,
   Course,
   Career,
+  Cohort,
 } = require('../models')
 
 /**
@@ -105,6 +106,13 @@ const courseByIdExists = async (id = '') => {
   }
 }
 
+const cohortByIdExists = async (id = '') => {
+  const cohortExists = await Cohort.findById(id)
+  if (!cohortExists) {
+    throw new Error(`La cohorte con id '${id}' no existe en la base de datos`)
+  }
+}
+
 module.exports = {
   isValidRole,
   emailExists,
@@ -116,4 +124,5 @@ module.exports = {
   noveltytByIdExists,
   articleByIdExists,
   courseByIdExists,
+  cohortByIdExists
 }
