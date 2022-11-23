@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const { DateTime } = require('luxon')
 
 const CohortSchema = Schema({
   code: {
@@ -43,14 +44,48 @@ const CohortSchema = Schema({
     type: Date,
     required: true,
   },
-  updateAt: {
+  updatedAt: {
     type: Date,
   },
 })
 
 CohortSchema.methods.toJSON = function () {
-  const { __v, _id, status, ...cohort } = this.toObject()
+  const { __v, _id, status, createdAt, updatedAt, ...cohort } = this.toObject()
 
+  cohort.createdAt = DateTime.fromISO(createdAt.toISOString())
+  if (updatedAt) cohort.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+
+  cohort.careers = cohort.careers.map((career) => {
+    const { _id: c_id, __v: c__v, status, ...rest } = career
+    rest.id = c_id
+    return rest
+  })
+
+  cohort.participants = cohort.participants.map((participant) => {
+    const {
+      _id: c_id,
+      __v: c__v,
+      password,
+      status,
+      google,
+      ...rest
+    } = participant
+    rest.id = c_id
+    return rest
+  })
+
+  const {
+    __v: u__v,
+    password,
+    _id: u_id,
+    status: uStatus,
+    google,
+    ...user
+  } = cohort.user
+  user.id = u_id
+  cohort.user = user
+
+  cohort.id = _id
   return cohort
 }
 

@@ -92,13 +92,12 @@ const updateCohort = async (req = request, res = response) => {
       user: req.authenticatedUser.id,
       modifiedAt: DateTime.now(),
       careers: req.careersDB,
-      participants: req.usersDB
+      participants: req.usersDB,
     }
 
     if (description) data.description = description
     if (duration) data.duration = duration
     if (quantity) data.quantity = quantity
-
 
     const cohort = await Cohort.findByIdAndUpdate(id, data, { new: true })
 
@@ -110,7 +109,7 @@ const updateCohort = async (req = request, res = response) => {
   }
 }
 
-const deleteCohort = async(req = request, res = response) => {
+const deleteCohort = async (req = request, res = response) => {
   try {
     const cohort = await Cohort.findByIdAndUpdate(
       req.params.id,
@@ -128,4 +127,4 @@ const deleteCohort = async(req = request, res = response) => {
   }
 }
 
-module.exports = { createCohort, getCohorts, updateCohort,deleteCohort }
+module.exports = { createCohort, getCohorts, updateCohort, deleteCohort }
