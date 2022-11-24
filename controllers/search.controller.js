@@ -1,6 +1,6 @@
 const { request, response } = require('express')
-const { User, Category, Product } = require('../models')
-const { isObjectId } = require('../helpers')
+const { User, Category, Product, Cohort } = require('../models')
+const { isObjectId, serverErrorHandler } = require('../helpers')
 const { DateTime } = require('luxon')
 const allowedCollections = [
   'users',
@@ -8,6 +8,7 @@ const allowedCollections = [
   'products',
   'roles',
   'productsByCategory',
+  'cohorts',
 ]
 
 const searchUsers = async (searchTerm = '', res = response) => {
@@ -165,6 +166,104 @@ const searchProducts = async (searchTerm = '', res = response) => {
   }
 }
 
+const searchCohorts = async (searchTerm = '', res = response) => {
+  try {
+    if (isObjectId(searchTerm)) {
+      const cohort = await Cohort.findById(searchTerm)
+        .populate('user')
+        .populate('careers')
+
+      return res.status(200).json({
+        queriedFields: ['id'],
+        results: cohort ? [cohort] : [],
+      })
+    }
+
+    // if (!isNaN(Number(searchTerm))) {
+    //   const products = await Product.find({ price: searchTerm, status: true })
+    //     .populate('user', ['name', 'email'])
+    //     .populate('category', 'name')
+
+    //   return res.status(200).json({
+    //     queriedFields: ['price'],
+    //     quantity: products.length,
+    //     products,
+    //   })
+    // }
+
+    //2022-10-23T12:50:30.210Z
+    const date = DateTime.fromFormat(
+      searchTerm,
+      'yyyy-MM-dd'
+    ).toUTC()
+
+
+    if (!date.invalid) {
+      const UTCCreatedAt = { date: '$createdAt', timezone: 'America/Bogota' }
+      const UTCUpdatedAt = { date: '$updatedAt', timezone: 'America/Bogota' }
+      const cohorts = await Cohort.find({
+        $or: [
+          {
+            $expr: {
+              $and: [{ $eq: [{ $year: UTCCreatedAt }, { $year: date }] }],
+              $and: [{ $eq: [{ $month: UTCCreatedAt }, { $month: date }] }],
+              $and: [
+                { $eq: [{ $dayOfMonth: UTCCreatedAt }, { $dayOfMonth: date }] },
+              ],
+            },
+          },
+          {
+            $expr: {
+              $and: [{ $eq: [{ $year: UTCUpdatedAt }, { $year: date }] }],
+              $and: [{ $eq: [{ $month: UTCUpdatedAt }, { $month: date }] }],
+              $and: [
+                { $eq: [{ $dayOfMonth: UTCUpdatedAt }, { $dayOfMonth: date }] },
+              ],
+            },
+          },
+        ],
+        $and: [{ status: true }],
+      })
+        .populate('user' )
+        .populate('careers')
+
+      return res.status(200).json({
+        queriedFields: ['createdAt', 'updatedAt'],
+        quantity: cohorts.length,
+        cohorts,
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+
+    if (regex.test('true') || regex.test('false')) {
+      const cohorts = await Cohort.find({
+        status: regex.test('true'),
+      })
+        .populate('user')
+        .populate('careers')
+
+      return res.status(200).json({
+        queriedFields: ['available'],
+        quantity: cohorts.length,
+        cohorts,
+      })
+    }
+
+    const cohorts = await Cohort.find({ code: regex, status: true })
+      .populate('user')
+      .populate('careers')
+
+    res.status(200).json({
+      queriedFields: ['code'],
+      quantity: cohorts.length,
+      cohorts,
+    })
+  } catch (error) {
+    serverErrorHandler(error,res)
+  }
+}
+
 const searchProductsByCategory = async (searchTerm = '', res = response) => {
   try {
     if (isObjectId(searchTerm)) {
@@ -222,6 +321,9 @@ const search = (req = request, res = response) => {
         break
       case 'products':
         searchProducts(searchTerm, res)
+        break
+      case 'cohorts':
+        searchCohorts(searchTerm, res)
         break
       case 'productsByCategory':
         searchProductsByCategory(searchTerm, res)
