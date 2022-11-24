@@ -1,5 +1,5 @@
 const { request, response } = require('express')
-const { User, Category, Product, Novelty } = require('../models')
+const { User, Category, Product, Novelty, Course } = require('../models')
 const { isObjectId, serverErrorHandler } = require('../helpers')
 const { DateTime } = require('luxon')
 
@@ -10,6 +10,7 @@ const allowedCollections = [
   'roles',
   'productsByCategory',
   'novelties',
+  'courses',
 ]
 
 const searchUsers = async (searchTerm = '', res = response) => {
@@ -244,6 +245,83 @@ const searchNovelties = async (searchTerm = '', res = response) => {
   }
 }
 
+const searchCourses = async (searchTerm = '', res = response) => {
+  try {
+    if (isObjectId(searchTerm)) {
+      const course = await Course.findById(searchTerm).populate('user')
+
+      return res.status(200).json({
+        queriedFields: ['id'],
+        results: course ? [course] : [],
+      })
+    }
+
+    //2022-10-23
+    const date = DateTime.fromFormat(searchTerm, 'yyyy-MM-dd').toUTC()
+    if (!date.invalid) {
+      console.log(date)
+      const UTCCreatedAt = { date: '$createdAt', timezone: 'America/Bogota' }
+      const UTCUpdatedAt = { date: '$updatedAt', timezone: 'America/Bogota' }
+      const courses = await Course.find({
+        $or: [
+          {
+            $expr: {
+              $and: [{ $eq: [{ $year: UTCCreatedAt }, { $year: date }] }],
+              $and: [{ $eq: [{ $month: UTCCreatedAt }, { $month: date }] }],
+              $and: [
+                { $eq: [{ $dayOfMonth: UTCCreatedAt }, { $dayOfMonth: date }] },
+              ],
+            },
+          },
+          {
+            $expr: {
+              $and: [{ $eq: [{ $year: UTCUpdatedAt }, { $year: date }] }],
+              $and: [{ $eq: [{ $month: UTCUpdatedAt }, { $month: date }] }],
+              $and: [
+                { $eq: [{ $dayOfMonth: UTCUpdatedAt }, { $dayOfMonth: date }] },
+              ],
+            },
+          },
+        ],
+        $and: [{ status: true }],
+      }).populate('user')
+
+      return res.status(200).json({
+        queriedFields: ['createdAt', 'updatedAt'],
+        quantity: courses.length,
+        courses,
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+
+    if (regex.test('true') || regex.test('false')) {
+      const courses = await Course.find({
+        status: regex.test('true'),
+      }).populate('user')
+
+      return res.status(200).json({
+        queriedFields: ['status'],
+        quantity: courses.length,
+        courses,
+      })
+    }
+
+    const courses = await Course.find({
+      name: regex,
+      status: true,
+    }).populate('user')
+
+    res.status(200).json({
+      queriedFields: ['name'],
+      quantity: courses.length,
+      courses,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
+}
+
 const searchProductsByCategory = async (searchTerm = '', res = response) => {
   try {
     if (isObjectId(searchTerm)) {
@@ -304,6 +382,9 @@ const search = (req = request, res = response) => {
         break
       case 'novelties':
         searchNovelties(searchTerm, res)
+        break
+      case 'courses':
+        searchCourses(searchTerm, res)
         break
       case 'productsByCategory':
         searchProductsByCategory(searchTerm, res)
