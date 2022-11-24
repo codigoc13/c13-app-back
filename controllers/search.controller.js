@@ -259,7 +259,6 @@ const searchArticles = async (searchTerm = '', res = response) => {
     //2022-10-23
     const date = DateTime.fromFormat(searchTerm, 'yyyy-MM-dd').toUTC()
     if (!date.invalid) {
-      console.log(date)
       const UTCCreatedAt = { date: '$createdAt', timezone: 'America/Bogota' }
       const UTCUpdatedAt = { date: '$updatedAt', timezone: 'America/Bogota' }
       const articles = await Article.find({
@@ -301,7 +300,7 @@ const searchArticles = async (searchTerm = '', res = response) => {
       }).populate('user')
 
       return res.status(200).json({
-        queriedFields: ['available'],
+        queriedFields: ['status'],
         quantity: articles.length,
         articles,
       })
