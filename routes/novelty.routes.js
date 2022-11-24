@@ -8,8 +8,8 @@ const {
   findAll,
   update,
   deleteById,
-} = require('../controllers/course.controller.js')
-const { courseByIdExists } = require('../helpers/db-validators')
+} = require('../controllers/novelty.controller')
+const { noveltytByIdExists } = require('../helpers/db-validators')
 
 const router = Router()
 
@@ -17,16 +17,8 @@ router.post(
   '/',
   [
     validateJWT,
-    isRole('ADMIN_ROLE'),
-    check('name', 'El nombre es requerido').not().isEmpty(),
+    check('title', 'El título es requerido').not().isEmpty(),
     check('description', 'La descripción es requerida').not().isEmpty(),
-    check('duration', 'La duración (semanas) es requerida').not().isEmpty(),
-    check('maxCapacity', 'La capacidad de estudiantes máxima es requerida')
-      .not()
-      .isEmpty(),
-    check('minRequired', 'La capacidad mínima de estudiantes  es requerida')
-      .not()
-      .isEmpty(),
     validateFields,
   ],
   create
@@ -40,7 +32,7 @@ router.patch(
     validateJWT,
     isRole('ADMIN_ROLE'),
     check('id', 'El id debe ser válido de Mongo').isMongoId(),
-    // check('id').custom(courseByIdExists),
+    check('id').custom(noveltytByIdExists),
     validateFields,
   ],
   update
@@ -52,7 +44,7 @@ router.delete(
     validateJWT,
     isRole('ADMIN_ROLE'),
     check('id', 'El id debe ser válido de Mongo').isMongoId(),
-    check('id').custom(courseByIdExists),
+    check('id').custom(noveltytByIdExists),
     validateFields,
   ],
   deleteById

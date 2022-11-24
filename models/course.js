@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const { DateTime } = require('luxon')
 
 const CourseSchema = Schema({
   name: {
@@ -39,9 +40,30 @@ const CourseSchema = Schema({
     type: Date,
     required: true,
   },
-  updateAt: {
+  updatedAt: {
     type: Date,
   },
 })
+
+CourseSchema.methods.toJSON = function () {
+  const { __v, _id, status, createdAt, updatedAt, ...course } = this.toObject()
+  course.id = _id
+  course.createdAt = DateTime.fromISO(createdAt.toISOString())
+  if (updatedAt) course.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+
+  const {
+    __v: u__v,
+    _id: u_id,
+    password,
+    status: uStatus,
+    google,
+    ...user
+  } = course.user
+  user.id = u_id
+
+  course.user = user
+
+  return course
+}
 
 module.exports = model('Course', CourseSchema)
