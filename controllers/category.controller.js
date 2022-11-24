@@ -7,6 +7,7 @@ const getCategories = async (req = request, res = response) => {
     let { from = 0, lot = 5 } = req.query
     from = from <= 0 || isNaN(from) ? 0 : from - 1
 
+    
     const query = { status: true }
 
     const [categories, total] = await Promise.all([
