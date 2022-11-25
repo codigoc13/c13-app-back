@@ -11,6 +11,7 @@ const allowedCollections = [
   'productsByCategory',
   'novelties',
   'courses',
+  'coursesByUser',
 ]
 
 const searchUsers = async (searchTerm = '', res = response) => {
@@ -359,6 +360,41 @@ const searchProductsByCategory = async (searchTerm = '', res = response) => {
   }
 }
 
+const searchCoursesByUser = async (searchTerm = '', res = response) => {
+  try {
+    if (isObjectId(searchTerm)) {
+      const course = await Course.find({ user: searchTerm }).populate('user')
+      return res.status(200).json({
+        queriedFields: ['user_id'],
+        results: course ? [course] : [],
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+
+    const users = await User.find({ name: regex, status: true })
+    const usersIds = users.map((user) => user.id)
+
+    const courses = await Course.find({
+      user: {
+        $in: usersIds,
+      },
+      status: true,
+    }).populate('user')
+
+    res.status(200).json({
+      queriedFields: ['user_name'],
+      quantity: courses.length,
+      courses,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
+
 const search = (req = request, res = response) => {
   try {
     const { collection, searchTerm } = req.params
@@ -388,6 +424,9 @@ const search = (req = request, res = response) => {
         break
       case 'productsByCategory':
         searchProductsByCategory(searchTerm, res)
+        break
+      case 'coursesByUser':
+        searchCoursesByUser(searchTerm, res)
         break
       default:
         res.status(500).json({
