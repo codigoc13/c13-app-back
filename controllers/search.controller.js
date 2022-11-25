@@ -2,6 +2,7 @@ const { request, response } = require('express')
 const { User, Category, Product, Novelty, Article } = require('../models')
 const { isObjectId, serverErrorHandler } = require('../helpers')
 const { DateTime } = require('luxon')
+const article = require('../models/article')
 
 const allowedCollections = [
   'users',
@@ -11,6 +12,7 @@ const allowedCollections = [
   'productsByCategory',
   'novelties',
   'articles',
+  'articlesByUser',
 ]
 
 const searchUsers = async (searchTerm = '', res = response) => {
@@ -358,6 +360,43 @@ const searchProductsByCategory = async (searchTerm = '', res = response) => {
   }
 }
 
+const searchArticlesByUser = async (searchTerm = '', res = response) => {
+  try {
+
+    if (isObjectId(searchTerm)) {
+      const article = await Article.find({ user: searchTerm })
+        .populate('user')
+      return res.status(200).json({
+        queriedFields: ['user_id'],
+        results: article ? [article] : [],
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+    const users = await User.find({ name: regex })
+    const usersIds = users.map((user) => user.id)
+
+    const articles = await Article.find({
+      user: {
+        $in: usersIds,
+      },
+      status: true,
+    })
+      .populate('user')
+
+    res.status(200).json({
+      queriedFields: ['user_name'],
+      quantity: articles.length,
+      articles,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
+
 const search = (req = request, res = response) => {
   try {
     const { collection, searchTerm } = req.params
@@ -387,6 +426,10 @@ const search = (req = request, res = response) => {
         break
       case 'searchArticles':
         searchArticles(searchTerm, res)
+        break
+      case 'articlesByUser':
+        searchArticlesByUser(searchTerm, res)
+        break
       default:
         res.status(500).json({
           msg: 'Búsqueda por hacer',
