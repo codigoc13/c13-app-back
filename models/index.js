@@ -15,7 +15,6 @@ module.exports = {
   Category,
   Cohort,
   Course,
-  Course,
   Invoice,
   Novelty,
   Product,

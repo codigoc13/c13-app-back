@@ -3,13 +3,11 @@ const {
   Role,
   User,
   Product,
-  Article,
   Novelty,
   Course,
   Career,
   Cohort,
 } = require('../models')
-const { isObjectId } = require('./validate-object-id')
 
 /**
  * Validación contra la BD de usuarios
@@ -93,12 +91,6 @@ const noveltytByIdExists = async (id = '') => {
 /**
  * Validar contra la BD de artículos
  */
-const articleByIdExists = async (id = '') => {
-  const articleExists = await Article.findById(id)
-  if (!articleExists) {
-    throw new Error(`Artículo con id '${id}' no existe en la base de datos `)
-  }
-}
 
 const courseByIdExists = async (id = '') => {
   const courseExists = await Course.findById(id)
@@ -115,15 +107,14 @@ const cohortByIdExists = async (id = '') => {
 }
 
 module.exports = {
-  isValidRole,
-  emailExists,
-  userByIdExists,
-  categoryByIdExists,
-  productByIdExists,
   allowedCollections,
   careerByIdExists,
-  noveltytByIdExists,
-  articleByIdExists,
+  categoryByIdExists,
+  cohortByIdExists,
   courseByIdExists,
-  cohortByIdExists
+  emailExists,
+  isValidRole,
+  noveltytByIdExists,
+  productByIdExists,
+  userByIdExists,
 }

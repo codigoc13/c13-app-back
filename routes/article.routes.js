@@ -1,15 +1,14 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
 
-const { isRole, validateJWT } = require('../middlewares')
-const { validateFields } = require('../middlewares/validate-fields')
-const { articleByIdExists } = require('../helpers/db-validators')
+const { isRole, validateJWT, validateFields } = require('../middlewares')
+const { articleByIdExists, articleTitleExists } = require('../helpers')
 
 const {
   create,
+  deleteById,
   findAll,
   update,
-  deleteById,
 } = require('../controllers/article.controller')
 
 const router = Router()
@@ -19,8 +18,11 @@ router.post(
   [
     validateJWT,
     isRole('ADMIN_ROLE'),
-    check('title', 'El titulo es requerido').not().isEmpty(),
+    check('title', 'El título es requerido').not().isEmpty(),
+    check('title', 'El título debe ser caracteres').isString(),
+    check('title').custom(articleTitleExists),
     check('description', 'La descripción es requerida').not().isEmpty(),
+    check('description', 'La descripcíon debe ser careacteres').isString(),
     validateFields,
   ],
   create

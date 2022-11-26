@@ -6,22 +6,13 @@ const { serverErrorHandler } = require('../helpers')
 
 const create = async (req = request, res = response) => {
   try {
-    let { title, description } = req.body
-    title = title.toLowerCase().trim()
-    description = description.toLowerCase().trim()
-
-    const articleBD = await Article.findOne({ title })
-    if (articleBD) {
-      return res.status(400).json({
-        msg: `Ya existe un artículo con el titulo ${title}`,
-      })
-    }
+    const { description, title } = req.body
 
     const data = {
-      title,
-      description,
-      user: req.authenticatedUser.id,
       createdAt: DateTime.now(),
+      description: description.toLowerCase().trim(),
+      title: title.toLowerCase().trim(),
+      user: req.authenticatedUser.id,
     }
 
     const article = new Article(data)
