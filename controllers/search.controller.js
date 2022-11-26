@@ -1,5 +1,5 @@
 const { request, response } = require('express')
-const { User, Category, Product, Cohort } = require('../models')
+const { User, Category, Product, Cohort, Career } = require('../models')
 const { isObjectId, serverErrorHandler } = require('../helpers')
 const { DateTime } = require('luxon')
 const allowedCollections = [
@@ -9,6 +9,9 @@ const allowedCollections = [
   'roles',
   'productsByCategory',
   'cohorts',
+  'cohortsByUser',
+  'cohortsByCareer',
+  'cohortsByParticipant',
 ]
 
 const searchUsers = async (searchTerm = '', res = response) => {
@@ -172,6 +175,7 @@ const searchCohorts = async (searchTerm = '', res = response) => {
       const cohort = await Cohort.findById(searchTerm)
         .populate('user')
         .populate('careers')
+        .populate('participants')
 
       return res.status(200).json({
         queriedFields: ['id'],
@@ -224,8 +228,9 @@ const searchCohorts = async (searchTerm = '', res = response) => {
         ],
         $and: [{ status: true }],
       })
-        .populate('user' )
+        .populate('user')
         .populate('careers')
+        .populate('participants')
 
       return res.status(200).json({
         queriedFields: ['createdAt', 'updatedAt'],
@@ -242,6 +247,7 @@ const searchCohorts = async (searchTerm = '', res = response) => {
       })
         .populate('user')
         .populate('careers')
+        .populate('participants')
 
       return res.status(200).json({
         queriedFields: ['available'],
@@ -253,6 +259,7 @@ const searchCohorts = async (searchTerm = '', res = response) => {
     const cohorts = await Cohort.find({ code: regex, status: true })
       .populate('user')
       .populate('careers')
+      .populate('participants')
 
     res.status(200).json({
       queriedFields: ['code'],
@@ -260,7 +267,7 @@ const searchCohorts = async (searchTerm = '', res = response) => {
       cohorts,
     })
   } catch (error) {
-    serverErrorHandler(error,res)
+    serverErrorHandler(error, res)
   }
 }
 
@@ -301,6 +308,128 @@ const searchProductsByCategory = async (searchTerm = '', res = response) => {
   }
 }
 
+
+const searchCohortsByUser = async (searchTerm = '', res = response) => {
+  try {
+
+    if (isObjectId(searchTerm)) {
+      const cohort = await Cohort.find({ user: searchTerm })
+        .populate('user')
+        .populate('careers')
+        .populate('participants')
+
+      return res.status(200).json({
+        queriedFields: ['user_id'],
+        results: cohort ? [cohort] : [],
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+
+    const users = await User.find({ name: regex})
+    const usersIds = users.map((user) => user.id)
+
+    const cohorts = await Cohort.find({
+      user: {
+        $in: usersIds,
+      },
+      status: true,
+    }).populate('user')
+      .populate('careers')
+      .populate('participants')
+
+    res.status(200).json({
+      queriedFields: ['user_name'],
+      quantity: cohorts.length,
+      cohorts,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
+
+const searchCohortsByCareer = async (searchTerm = '', res = response) => {
+  try {
+    if (isObjectId(searchTerm)) {
+      const cohort = await Cohort.find({ careers: { _id: searchTerm } })
+        .populate('user')
+        .populate('participants')
+        .populate('careers')
+      return res.status(200).json({
+        queriedFields: ['career_id'],
+        results: cohort ? [cohort] : [],
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+    const careers = await Career.find({ name: regex })
+    const careersIds = careers.map((career) => career.id)
+
+    const cohorts = await Cohort.find({
+      careers: {
+        $in: careersIds,
+      },
+      status: true,
+    }).populate('user')
+      .populate('careers')
+      .populate('participants')
+
+    res.status(200).json({
+      queriedFields: ['career_name'],
+      quantity: cohorts.length,
+      cohorts,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
+
+const searchCohortsByParticipant = async (searchTerm = '', res = response) => {
+  try {
+    if (isObjectId(searchTerm)) {
+      const cohort = await Cohort.find({ participants: { _id: searchTerm } })
+        .populate('user')
+        .populate('careers')
+        .populate('participants')
+      return res.status(200).json({
+        queriedFields: ['user_id'],
+        results: cohort ? [cohort] : [],
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+
+    const users = await User.find({ name: regex})
+    const usersIds = users.map((user) => user.id)
+
+    const cohort = await Cohort.find({
+      participants: {
+        $in: usersIds,
+      },
+      status: true,
+    }).populate('user')
+      .populate('careers')
+      .populate('participants')
+
+    res.status(200).json({
+      queriedFields: ['user_name'],
+      quantity: cohort.length,
+      cohort,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Error en el servidor',
+    })
+  }
+}
+
 const search = (req = request, res = response) => {
   try {
     const { collection, searchTerm } = req.params
@@ -327,6 +456,15 @@ const search = (req = request, res = response) => {
         break
       case 'productsByCategory':
         searchProductsByCategory(searchTerm, res)
+        break
+      case 'cohortsByUser':
+        searchCohortsByUser(searchTerm, res)
+        break
+      case 'cohortsByCareer':
+        searchCohortsByCareer(searchTerm, res)
+        break
+      case 'cohortsByParticipant':
+        searchCohortsByParticipant(searchTerm, res)
         break
       default:
         res.status(500).json({
