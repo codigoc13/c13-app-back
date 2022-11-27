@@ -1,18 +1,21 @@
-const dbarticlesValidation = require('./db-articles-validations')
-
+const articlesValidation = require('./articles-validations')
 const dbValidators = require('./db-validators')
 const generateJWT = require('./generate-jwt')
 const googleVerify = require('./google-verify')
-const validateObjectId = require('./validate-object-id')
-const uploadFile = require('./upload-file')
 const serverErrorHandler = require('./server-error-handler')
+const uploadFile = require('./upload-file')
+const uploadsValidations = require('./uploads-validations')
+const usersValidation = require('./users-validations')
+const validateObjectId = require('./validate-object-id')
 
 module.exports = {
-  ...dbarticlesValidation,
+  ...articlesValidation,
   ...dbValidators,
   ...generateJWT,
   ...googleVerify,
-  ...validateObjectId,
-  ...uploadFile,
   ...serverErrorHandler,
+  ...uploadFile,
+  ...uploadsValidations,
+  ...usersValidation,
+  ...validateObjectId,
 }

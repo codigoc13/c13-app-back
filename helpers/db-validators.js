@@ -12,26 +12,6 @@ const {
 /**
  * Validación contra la BD de usuarios
  */
-const isValidRole = async (role = '') => {
-  const existsRole = await Role.findOne({ role })
-  if (!existsRole) {
-    throw new Error(`El rol ${role} no está registrado en la base de datos`)
-  }
-}
-
-const emailExists = async (email = '') => {
-  const user = await User.findOne({ email })
-  if (user) {
-    throw new Error(`El correo '${email}' ya está registrado`)
-  }
-}
-
-const userByIdExists = async (id = '') => {
-  const userExists = await User.findById(id)
-  if (!userExists) {
-    throw new Error(`Usuario con id '${id}' no existe en la base de datos`)
-  }
-}
 
 /**
  * Validación contra la BD de categorías
@@ -67,16 +47,6 @@ const productByIdExists = async (id = '') => {
 /**
  *  Validar colecciones permitidas
  */
-const allowedCollections = (collection = '', collections = []) => {
-  const include = collections.includes(collection)
-  if (!include)
-    throw new Error(
-      `La colección ${collection} no es permitida. Colecciones permitidas: ${collections.join(
-        ', '
-      )}`
-    )
-  return true
-}
 
 /**
  * Validaciones contra la BD de noticias
@@ -107,14 +77,10 @@ const cohortByIdExists = async (id = '') => {
 }
 
 module.exports = {
-  allowedCollections,
   careerByIdExists,
   categoryByIdExists,
   cohortByIdExists,
   courseByIdExists,
-  emailExists,
-  isValidRole,
   noveltytByIdExists,
   productByIdExists,
-  userByIdExists,
 }
