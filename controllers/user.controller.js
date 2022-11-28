@@ -1,65 +1,118 @@
+const { DateTime } = require('luxon')
 const { request, response } = require('express')
 const bcryptjs = require('bcryptjs')
-const User = require('../models/user')
 
-const getUsers = async (req = request, res = response) => {
-  let { from = 0, lot = 5 } = req.query
-  from = from <= 0 || isNaN(from) ? 0 : from - 1
+const { generateJWT, serverErrorHandler } = require('../helpers')
+const { User } = require('../models')
 
-  const query = { status: true }
+const create = async (req = request, res = response) => {
+  try {
+    const { firstName, lastName, name, password, ...rest } = req.body
 
-  const [users, total] = await Promise.all([
-    User.find(query).skip(from).limit(lot),
-    User.countDocuments(query),
-  ])
+    const data = {
+      ...rest,
+      createdAt: DateTime.now(),
+      lastName: lastName.toLowerCase(),
+      firstName: firstName.toLowerCase(),
+      password: bcryptjs.hashSync(password, bcryptjs.genSaltSync()),
+    }
 
-  const quantity = users.length
-  const pagination = {
-    from: Number(from + 1),
-    lot: Number(lot),
+    const user = new User(data)
+    await user.save()
+
+    const token = await generateJWT(user.id)
+
+    res.status(201).json({
+      user,
+      token,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
   }
-
-  res.json({
-    total,
-    quantity,
-    pagination,
-    users,
-  })
 }
 
-const createUser = async (req = request, res = response) => {
-  const { name, email, password, role } = req.body
-  const user = new User({ name, email, password, role })
+const findAll = async (req = request, res = response) => {
+  try {
+    let { from = 0, lot = 5 } = req.query
+    from = from <= 0 || isNaN(from) ? 0 : from - 1
+    lot = lot <= 0 || isNaN(lot) ? 10 : lot
 
-  user.password = bcryptjs.hashSync(password, bcryptjs.genSaltSync())
-  await user.save()
+    const query = { status: true }
 
-  res.status(201).json({
-    user,
-  })
+    const [users, total] = await Promise.all([
+      User.find(query).skip(from).limit(lot),
+      User.countDocuments(query),
+    ])
+
+    res.json({
+      total,
+      quantity: users.length,
+      pagination: {
+        from: Number(from + 1),
+        lot: Number(lot),
+      },
+      users,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
 }
 
-const updateUser = async (req = request, res = response) => {
-  const { id } = req.params
-  const { _id, password, google, ...remainder } = req.body
+const update = async (req = request, res = response) => {
+  try {
+    const { id } = req.params
+    const {
+      address,
+      email,
+      firstName,
+      lastName,
+      numberDocument,
+      password,
+      phoneNumbers,
+      role,
+      typeDocument,
+      username,
+    } = req.body
 
-  if (password) {
-    remainder.password = bcryptjs.hashSync(password, bcryptjs.genSaltSync())
+    const data = {}
+    if (address) data.address = address
+    if (firstName) data.email = email
+    if (firstName) data.firstName = firstName.toLowerCase()
+    if (firstName) data.phoneNumbers = phoneNumbers
+    if (lastName) data.lastName = lastName.toLowerCase()
+    if (numberDocument) data.numberDocument = numberDocument
+    if (password)
+      data.password = bcryptjs.hashSync(password, bcryptjs.genSaltSync())
+    if (role) data.role = role
+    if (typeDocument) data.typeDocument = typeDocument
+    if (username) data.username = username
+
+    const user = await User.findByIdAndUpdate(id, data, { new: true })
+
+    res.status(200).json({
+      user,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
   }
-  const user = await User.findByIdAndUpdate(id, remainder, { new: true })
-
-  res.status(200).json({
-    user,
-  })
 }
 
 const deleteUser = async (req = request, res = response) => {
-  const { id } = req.params
-
-  const deletedUser = await User.findByIdAndUpdate(id, { status: false })
-  res.json({
-    deletedUser,
-  })
+  try {
+    const deletedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: false,
+        updatedAt: DateTime.now(),
+      },
+      { new: true }
+    )
+    res.json({
+      deletedUser,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
 }
 
-module.exports = { getUsers, createUser, updateUser, deleteUser }
+module.exports = { create, deleteUser, findAll, update }
