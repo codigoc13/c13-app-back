@@ -2,17 +2,23 @@ const { Router } = require('express')
 
 const {
   createUserCheck,
-  updateUserCheck,
   deleteUserCheck,
+  getUsersCheck,
+  updateUserCheck,
 } = require('../middlewares')
 
-const { create, deleteUser, findAll, update } = require('../controllers')
+const {
+  create,
+  deleteUser,
+  findAll,
+  update,
+} = require('../controllers/user.controller')
 
 const router = Router()
 
 router.post('/', createUserCheck(), create)
 
-router.get('/', findAll)
+router.get('/', getUsersCheck(), findAll)
 
 router.patch('/:id', updateUserCheck(), update)
 
