@@ -6,8 +6,10 @@ const validateNovelties = require('../middlewares/validate-novelties')
 const validateRoles = require('../middlewares/validate-roles')
 const validateUploads = require('../middlewares/validate-uploads')
 const validateUsers = require('../middlewares/validate-users')
+const validateCohorts = require('../middlewares/validate-cohorts')
 
 module.exports = {
+  ...validateCohorts,
   ...validateFields,
   ...validateFile,
   ...validateJwt,
