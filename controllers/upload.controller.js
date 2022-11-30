@@ -1,11 +1,11 @@
 const { request, response } = require('express')
-const { serverErrorHandler } = require('../helpers')
 const { DateTime } = require('luxon')
 
+const { serverErrorHandler } = require('../helpers')
 const cloudinary = require('cloudinary').v2
 cloudinary.config(process.env.CLOUDINARY_URL)
 
-const { User } = require('../models')
+const { User, Novelty, Article } = require('../models')
 
 const updateImg = async (req = request, res = response) => {
   try {
@@ -23,9 +23,27 @@ const updateImg = async (req = request, res = response) => {
         }
         break
 
+      case 'novelties':
+        model = await Novelty.findById(id)
+        if (!model) {
+          return res.status(400).json({
+            msg: `No existe una noticia con el id ${id}`,
+          })
+        }
+        break
+
+      case 'articles':
+        model = await Article.findById(id)
+        if (!model) {
+          return res.status(400).json({
+            msg: `No existe un articulo con el id ${id}`,
+          })
+        }
+        break
+
       default:
         return res.status(500).json({
-          msg: `Por validar la colección ${collection}`,
+          msg: `Por validar la colección '${collection}'`,
         })
     }
 

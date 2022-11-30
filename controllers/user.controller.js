@@ -2,12 +2,12 @@ const { DateTime } = require('luxon')
 const { request, response } = require('express')
 const bcryptjs = require('bcryptjs')
 
-const { generateJWT, serverErrorHandler } = require('../helpers')
+const { serverErrorHandler } = require('../helpers')
 const { User } = require('../models')
 
 const create = async (req = request, res = response) => {
   try {
-    const { firstName, lastName, name, password, ...rest } = req.body
+    const { firstName, lastName, password, ...rest } = req.body
 
     const data = {
       ...rest,
@@ -20,11 +20,8 @@ const create = async (req = request, res = response) => {
     const user = new User(data)
     await user.save()
 
-    const token = await generateJWT(user.id)
-
     res.status(201).json({
       user,
-      token,
     })
   } catch (error) {
     serverErrorHandler(error, res)
