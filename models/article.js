@@ -10,7 +10,7 @@ const ArticleSchema = Schema({
     type: String,
     required: [true, 'La descripción es requerida'],
   },
-  imgUrl: {
+  img: {
     type: String,
   },
   user: {
