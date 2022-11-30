@@ -1,24 +1,23 @@
+const Article = require('./article')
+const Career = require('./career')
 const Category = require('./category')
+const Cohort = require('./cohort')
+const Course = require('./course')
+const Invoice = require('./invoice')
+const Novelty = require('./novelty')
 const Product = require('./product')
 const Role = require('./role')
 const User = require('./user')
-const Career = require('./career')
-const Invoice = require('./invoice')
-const Course = require('./course')
-const Novelty = require('./novelty')
-const Article = require('./article')
-const Cohort = require('./cohort')
 
 module.exports = {
+  Article,
+  Career,
   Category,
+  Cohort,
+  Course,
+  Invoice,
+  Novelty,
   Product,
   Role,
   User,
-  Invoice,
-  Career,
-  Course,
-  Course,
-  Novelty,
-  Article,
-  Cohort,
 }
