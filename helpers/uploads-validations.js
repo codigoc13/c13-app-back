@@ -1,10 +1,10 @@
-const allowedCollections = ['users']
+const allowedCollections = ['users', 'novelties']
 
 const validateCollection = (collection = '') => {
   const include = allowedCollections.includes(collection)
   if (!include)
     throw new Error(
-      `La colección ${collection} no es permitida. Colecciones permitidas: ${allowedCollections.join(
+      `La colección '${collection}' no es permitida. Colecciones permitidas: ${allowedCollections.join(
         ', '
       )}`
     )

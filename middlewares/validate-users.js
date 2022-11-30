@@ -5,6 +5,7 @@ const {
   isValidRole,
   isValidUsername,
   userByIdExists,
+  message,
 } = require('../helpers')
 const { validateFields } = require('./validate-fields')
 const { validateJWT } = require('./validate-jwt')
@@ -54,6 +55,7 @@ const createUserCheck = () => {
       ),
 
     // FIXME: Validar que solo se pueda ingresar un string de números.
+
     check('numberDocument')
       .notEmpty()
       .withMessage('El número de documento es requerido'),
@@ -104,6 +106,10 @@ const createUserCheck = () => {
   ]
 }
 
+const getUsersCheck = () => {
+  return [validateJWT, isRole('admin'), validateFields]
+}
+
 const updateUserCheck = () => {
   return [
     validateJWT,
@@ -112,15 +118,8 @@ const updateUserCheck = () => {
 
     check('id')
       .isMongoId()
-      .withMessage('El ID no es válido')
+      .withMessage(message.idIsNotValid)
       .custom(userByIdExists),
-
-    check('firstName')
-      .if(body('firstName').exists())
-      .isString()
-      .withMessage('El nombre debe ser una cadena de caracteres')
-      .isLength({ min: 3 })
-      .withMessage('El nombre debe contener mínimo de 3 caracteres'),
 
     check('firstName')
       .if(body('firstName').exists())
@@ -206,4 +205,9 @@ const deleteUserCheck = () => {
   ]
 }
 
-module.exports = { createUserCheck, deleteUserCheck, updateUserCheck }
+module.exports = {
+  createUserCheck,
+  deleteUserCheck,
+  getUsersCheck,
+  updateUserCheck,
+}
