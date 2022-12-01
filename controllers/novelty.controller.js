@@ -1,25 +1,18 @@
-const { request, response } = require('express')
 const { DateTime } = require('luxon')
-const { serverErrorHandler } = require('../helpers')
+const { request, response } = require('express')
+
 const { Novelty } = require('../models')
+const { serverErrorHandler } = require('../helpers')
 
 const create = async (req = request, res = response) => {
   try {
-    let { title, description } = req.body
-    title = title.toLowerCase().trim()
-
-    const noveltyDB = await Novelty.findOne({ title })
-    if (noveltyDB) {
-      return res.status(400).json({
-        msg: `Ya existe una noticia con el título ${title}`,
-      })
-    }
+    const { description, title } = req.body
 
     const data = {
-      title,
-      description,
-      user: req.authenticatedUser.id,
       createdAt: DateTime.now(),
+      description: description.toLowerCase().trim(),
+      title: title.toLowerCase().trim(),
+      user: req.authenticatedUser.id,
     }
 
     const novelty = new Novelty(data)
@@ -66,30 +59,19 @@ const findAll = async (req = request, res = response) => {
 
 const update = async (req = request, res = response) => {
   try {
-    let { title, description } = req.body
+    const { title, description } = req.body
 
     const data = {
       updatedAt: DateTime.now(),
     }
 
-    if (title) {
-      title = title.toLowerCase().trim()
-      const noveltyDB = await Novelty.findOne({ title })
-      if (noveltyDB) {
-        return res.status(400).json({
-          msg: `Ya existe una noticia con el título ${title}`,
-        })
-      }
-      data.title = title
-    }
-
-    if (description) data.description = description
+    if (title) data.title = title.toLowerCase().trim()
+    if (description) data.description = description.toLowerCase().trim()
 
     const novelty = await Novelty.findByIdAndUpdate(req.params.id, data, {
       new: true,
     })
 
-    novelty.save()
     res.json({
       novelty,
     })
@@ -100,7 +82,7 @@ const update = async (req = request, res = response) => {
 
 const deleteById = async (req = request, res = response) => {
   try {
-    const novelty = await Novelty.findByIdAndUpdate(
+    const deletedNovelty = await Novelty.findByIdAndUpdate(
       req.params.id,
       {
         status: false,
@@ -109,7 +91,7 @@ const deleteById = async (req = request, res = response) => {
       { new: true }
     )
     res.json({
-      novelty,
+      deletedNovelty,
     })
   } catch (error) {
     handlerErrorServer(error)
@@ -118,7 +100,7 @@ const deleteById = async (req = request, res = response) => {
 
 module.exports = {
   create,
+  deleteById,
   findAll,
   update,
-  deleteById,
 }

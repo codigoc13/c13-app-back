@@ -1,11 +1,11 @@
 const { request, response } = require('express')
-const { serverErrorHandler } = require('../helpers')
 const { DateTime } = require('luxon')
 
+const { serverErrorHandler } = require('../helpers')
 const cloudinary = require('cloudinary').v2
 cloudinary.config(process.env.CLOUDINARY_URL)
 
-const { User } = require('../models')
+const { User, Novelty, Course, Article } = require('../models')
 
 const updateImg = async (req = request, res = response) => {
   try {
@@ -14,18 +14,37 @@ const updateImg = async (req = request, res = response) => {
     let model
 
     switch (collection) {
+      case 'articles':
+        model = await Article.findById(id)
+        if (!model) {
+          return notFoundException('artículo', id, res)
+        }
+        break
+
+      case 'courses':
+        model = await Course.findById(id)
+        if (!model) {
+          return notFoundException('curso', id, res)
+        }
+        break
+
+      case 'novelties':
+        model = await Novelty.findById(id)
+        if (!model) {
+          return notFoundException('noticia', id, res)
+        }
+        break
+
       case 'users':
         model = await User.findById(id)
         if (!model) {
-          return res.status(400).json({
-            msg: `No existe un usuario con el id ${id}`,
-          })
+          return notFoundException('usuario', id, res)
         }
         break
 
       default:
         return res.status(500).json({
-          msg: `Por validar la colección ${collection}`,
+          msg: `Por validar la colección '${collection}'`,
         })
     }
 
@@ -48,6 +67,12 @@ const updateImg = async (req = request, res = response) => {
   } catch (error) {
     serverErrorHandler(error, res)
   }
+}
+
+const notFoundException = (modelo = '', id = '', res = response) => {
+  return res.status(400).json({
+    msg: `No existe un '${modelo}' con el id '${id}'`,
+  })
 }
 
 module.exports = {

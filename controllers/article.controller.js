@@ -58,25 +58,15 @@ const findAll = async (req = request, res = response) => {
 
 const update = async (req = request, res = response) => {
   try {
-    let { title, description } = req.body
+    const { description, title } = req.body
 
     const data = {
       updatedAt: DateTime.now(),
     }
 
-    if (title) {
-      title = title.toLowerCase().trim()
-
-      const articleBD = await Article.findOne({ title })
-      if (articleBD) {
-        return res.status(400).json({
-          msg: `El artículo ${articleBD.title} ya existe`,
-        })
-      }
-      data.title = title
-    }
-
     if (description) data.description = description.toLowerCase().trim()
+    if (title) data.title = title.toLowerCase().trim()
+
     const article = await Article.findByIdAndUpdate(req.params.id, data, {
       new: true,
     })
@@ -91,15 +81,14 @@ const update = async (req = request, res = response) => {
 
 const deleteById = async (req = request, res = response) => {
   try {
-    const { id } = req.params
-    const query = { status: false, updatedAt: DateTime.now() }
-
-    const deleteArticle = await Article.findByIdAndUpdate(id, query, {
-      new: true,
-    })
+    const deletedArticle = await Article.findByIdAndUpdate(
+      req.params.id,
+      { status: false, updatedAt: DateTime.now() },
+      { new: true }
+    )
 
     res.status(200).json({
-      deleteArticle,
+      deletedArticle,
     })
   } catch (error) {
     serverErrorHandler(error, res)
