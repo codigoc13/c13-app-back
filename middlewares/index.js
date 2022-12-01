@@ -1,4 +1,5 @@
 const validateArticles = require('../middlewares/validate-articles')
+const validateCourses = require('../middlewares/validate-courses')
 const validateFields = require('../middlewares/validate-fields')
 const validateFile = require('../middlewares/validate-file')
 const validateJwt = require('../middlewares/validate-jwt')
@@ -10,6 +11,7 @@ const validateUsers = require('../middlewares/validate-users')
 
 module.exports = {
   ...validateArticles,
+  ...validateCourses,
   ...validateFields,
   ...validateFile,
   ...validateJwt,

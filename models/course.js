@@ -13,7 +13,6 @@ const CourseSchema = Schema({
   duration: {
     type: Number,
     required: [true, 'La duración es requerida'],
-    // medida de tiempo: semanas
   },
   maxCapacity: {
     type: Number,

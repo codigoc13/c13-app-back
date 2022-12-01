@@ -1,4 +1,4 @@
-const { Category, Product, Course, Career, Cohort } = require('../models')
+const { Category, Product, Career, Cohort } = require('../models')
 
 /**
  * Validación contra la BD de usuarios
@@ -39,13 +39,6 @@ const productByIdExists = async (id = '') => {
  * Validar contra la BD de artículos
  */
 
-const courseByIdExists = async (id = '') => {
-  const courseExists = await Course.findById(id)
-  if (!courseExists) {
-    throw new Error(`Curso con id '${id}' no existe en la base de datos`)
-  }
-}
-
 const cohortByIdExists = async (id = '') => {
   const cohortExists = await Cohort.findById(id)
   if (!cohortExists) {
@@ -57,6 +50,5 @@ module.exports = {
   careerByIdExists,
   categoryByIdExists,
   cohortByIdExists,
-  courseByIdExists,
   productByIdExists,
 }

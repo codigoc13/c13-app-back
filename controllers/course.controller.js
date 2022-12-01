@@ -5,24 +5,16 @@ const { serverErrorHandler } = require('../helpers')
 
 const create = async (req = request, res = response) => {
   try {
-    let { name, description, duration, maxCapacity, minRequired } = req.body
-    name = name.toLowerCase().trim()
-
-    const courseDB = await Course.findOne({ name })
-    if (courseDB) {
-      return res.status(400).json({
-        msg: `Ya existe el curso: ${name}`,
-      })
-    }
+    const { name, description, duration, maxCapacity, minRequired } = req.body
 
     const data = {
-      name,
-      description,
+      createdAt: DateTime.now(),
+      description: description.toLowerCase(),
       duration,
       maxCapacity,
       minRequired,
+      name: name.toLowerCase(),
       user: req.authenticatedUser.id,
-      createdAt: DateTime.now(),
     }
 
     const course = new Course(data)
@@ -74,19 +66,8 @@ const update = async (req = request, res = response) => {
       updatedAt: DateTime.now(),
     }
 
-    if (name) {
-      name = name.toLowerCase().trim()
-
-      const courseDB = await Course.findOne({ name })
-      if (courseDB) {
-        return res.status(400).json({
-          msg: `Ya existe el curso: ${name}`,
-        })
-      }
-      data.name = name
-    }
-
-    if (description) data.description = description
+    if (name) data.name = name.toLowerCase()
+    if (description) data.description = description.toLowerCase()
     if (duration) data.duration = duration
     if (maxCapacity) data.maxCapacity = maxCapacity
     if (minRequired) data.minRequired = minRequired

@@ -1,4 +1,7 @@
-const { Course } = require('../../models')
+const { DateTime } = require('luxon')
+
+const { Course, User } = require('../../models')
+const { isObjectId } = require('../validate-object-id')
 const { serverErrorHandler } = require('../server-error-handler')
 
 const searchCourses = async (searchTerm = '', res = response) => {
@@ -15,7 +18,6 @@ const searchCourses = async (searchTerm = '', res = response) => {
     //2022-10-23
     const date = DateTime.fromFormat(searchTerm, 'yyyy-MM-dd').toUTC()
     if (!date.invalid) {
-      console.log(date)
       const UTCCreatedAt = { date: '$createdAt', timezone: 'America/Bogota' }
       const UTCUpdatedAt = { date: '$updatedAt', timezone: 'America/Bogota' }
       const courses = await Course.find({
@@ -83,14 +85,15 @@ const searchCoursesByUser = async (searchTerm = '', res = response) => {
     if (isObjectId(searchTerm)) {
       const course = await Course.find({ user: searchTerm }).populate('user')
       return res.status(200).json({
-        queriedFields: ['user_id'],
+        queriedFields: ['user.id'],
         results: course ? [course] : [],
       })
     }
 
     const regex = new RegExp(searchTerm, 'i')
-
-    const users = await User.find({ name: regex, status: true })
+    const users = await User.find({
+      $or: [{ firstName: regex }, { lastName: regex }, { username: regex }],
+    })
     const usersIds = users.map((user) => user.id)
 
     const courses = await Course.find({
@@ -101,7 +104,7 @@ const searchCoursesByUser = async (searchTerm = '', res = response) => {
     }).populate('user')
 
     res.status(200).json({
-      queriedFields: ['user_name'],
+      queriedFields: ['user.firstName', 'user.lastName', 'user.username'],
       quantity: courses.length,
       courses,
     })
