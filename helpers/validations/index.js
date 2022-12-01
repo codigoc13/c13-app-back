@@ -1,13 +1,15 @@
-const articlesValidation = require('./articles-validations')
-const coursesValidation = require('./courses-validations')
+const articlesValidations = require('./articles-validations')
+const careersValidations = require('./careers-validations')
+const coursesValidations = require('./courses-validations')
 const noveltiesValidations = require('./novelties-validations')
 const uploadsValidations = require('./uploads-validations')
-const usersValidation = require('./users-validations')
+const usersValidations = require('./users-validations')
 
 module.exports = {
-  ...articlesValidation,
-  ...coursesValidation,
+  ...articlesValidations,
+  ...careersValidations,
+  ...coursesValidations,
   ...noveltiesValidations,
   ...uploadsValidations,
-  ...usersValidation,
+  ...usersValidations,
 }

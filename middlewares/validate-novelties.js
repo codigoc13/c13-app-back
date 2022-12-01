@@ -1,7 +1,10 @@
 const { check, body } = require('express-validator')
 
-const { message, isObjectId } = require('../helpers')
-const { isValidTitle, noveltytByIdExists } = require('../helpers/validations')
+const { message } = require('../helpers')
+const {
+  isValidTitleNovelty,
+  noveltytByIdExists,
+} = require('../helpers/validations')
 const { isRole } = require('./validate-roles')
 const { validateFields } = require('./validate-fields')
 const { validateJWT } = require('./validate-jwt')
@@ -18,7 +21,7 @@ const createNoveltyCheck = () => {
       .if(body('title').exists())
       .isString()
       .withMessage(message.stringMale('título'))
-      .custom(isValidTitle),
+      .custom(isValidTitleNovelty),
 
     check('description')
       .notEmpty()
@@ -46,7 +49,7 @@ const updateNoveltyCheck = () => {
       .if(body('title').exists())
       .isString()
       .withMessage(message.stringMale('título'))
-      .custom(isValidTitle),
+      .custom(isValidTitleNovelty),
 
     check('description')
       .if(body('description').exists())

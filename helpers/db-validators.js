@@ -1,10 +1,6 @@
 const { Category, Product, Career, Cohort } = require('../models')
 
 /**
- * Validación contra la BD de usuarios
- */
-
-/**
  * Validación contra la BD de categorías
  */
 const categoryByIdExists = async (id = '') => {

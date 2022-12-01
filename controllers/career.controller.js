@@ -4,6 +4,39 @@ const { DateTime } = require('luxon')
 const { serverErrorHandler } = require('../helpers/server-error-handler')
 const { Career } = require('../models')
 
+const createCareer = async (req = request, res = response) => {
+  try {
+    let { name, status, ...body } = req.body
+
+    name = req.body.name.toLowerCase().trim()
+    description = req.body.description.toLowerCase().trim()
+    const careerDB = await Career.findOne({ name })
+
+    if (careerDB) {
+      return res.status(400).json({
+        msg: `La carrera ${careerDB.name} ya existe`,
+      })
+    }
+
+    const data = {
+      ...body,
+      name,
+      courses: req.coursesDB,
+      user: req.authenticatedUser.id,
+      createdAt: DateTime.now(),
+    }
+
+    const career = new Career(data)
+    await career.save()
+
+    res.status(201).json({
+      career,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
+}
+
 const getCareers = async (req = request, res = response) => {
   try {
     let { from = 0, lot = 10 } = req.query
@@ -32,39 +65,6 @@ const getCareers = async (req = request, res = response) => {
       quantity,
       pagination,
       careers,
-    })
-  } catch (error) {
-    serverErrorHandler(error, res)
-  }
-}
-
-const createCareer = async (req = request, res = response) => {
-  try {
-    let { name, status, ...body } = req.body
-
-    name = req.body.name.toLowerCase().trim()
-    description = req.body.description.toLowerCase().trim()
-    const careerDB = await Career.findOne({ name })
-
-    if (careerDB) {
-      return res.status(400).json({
-        msg: `La carrera ${careerDB.name} ya existe`,
-      })
-    }
-
-    const data = {
-      ...body,
-      name,
-      courses: req.coursesDB,
-      user: req.authenticatedUser.id,
-      createdAt: DateTime.now(),
-    }
-
-    const career = new Career(data)
-    await career.save()
-
-    res.status(201).json({
-      career,
     })
   } catch (error) {
     serverErrorHandler(error, res)
