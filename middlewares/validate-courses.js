@@ -1,6 +1,101 @@
 const { response, request } = require('express')
-const { serverErrorHandler, isObjectId } = require('../helpers')
+const { check, body } = require('express-validator')
+
 const { Course } = require('../models')
+const { isRole } = require('./validate-roles')
+const {
+  serverErrorHandler,
+  isObjectId,
+  isValidName,
+  courseByIdExists,
+  message,
+} = require('../helpers')
+const { validateFields } = require('./validate-fields')
+const { validateJWT } = require('./validate-jwt')
+
+const createCourseCheck = () => {
+  return [
+    validateJWT,
+    isRole('admin'),
+    check('name')
+      .notEmpty()
+      .withMessage('El nombre es requerido')
+      .if(body('name').exists())
+      .isString()
+      .withMessage('El nombre debe ser una cadena de caracteres')
+      .custom(isValidName),
+
+    check('description')
+      .notEmpty()
+      .withMessage('La descripción es requerida')
+      .if(body('description').exists())
+      .isString()
+      .withMessage('La descripción debe ser numerica'),
+
+    check('maxCapacity')
+      .notEmpty()
+      .withMessage('La capacidad maxima de estudiantes  es requerida')
+      .if(body('maxCapacity').exists())
+      .isNumeric()
+      .withMessage('La capacidad debe ser numérica'),
+
+    check('minRequired')
+      .notEmpty()
+      .withMessage(
+        'La capacidad mínima de estudiantes  es requerida es requerida'
+      )
+      .if(body('minRequired').exists())
+      .isNumeric()
+      .withMessage('La capacidad debe ser numérica'),
+    validateFields,
+  ]
+}
+
+const updateCourseCheck = () => {
+  return [
+    validateJWT,
+    isRole('admin'),
+    check('id')
+      .isMongoId()
+      .withMessage(message.idIsNotValid)
+      .custom(courseByIdExists),
+
+    check('name')
+      .if(body('name').exists())
+      .isString()
+      .withMessage('El nombre debe ser una cadena de caracteres')
+      .custom(isValidName),
+
+    check('description')
+      .if(body('description').exists())
+      .isString()
+      .withMessage('La descripción debe ser numerica'),
+
+    check('maxCapacity')
+      .if(body('maxCapacity').exists())
+      .isNumeric()
+      .withMessage('La capacidad debe ser numérica'),
+
+    check('minRequired')
+      .if(body('minRequired').exists())
+      .isNumeric()
+      .withMessage('La capacidad debe ser numérica'),
+    validateFields,
+  ]
+}
+
+const deleteCourseCheck = () => {
+  return [
+    validateJWT,
+    isRole('admin'),
+    check('id')
+      .isMongoId()
+      .withMessage(message.idIsNotValid)
+      .custom(courseByIdExists),
+
+    validateFields,
+  ]
+}
 
 const validateCourses = async (req = request, res = response, next) => {
   try {
@@ -48,4 +143,7 @@ const validateCourses = async (req = request, res = response, next) => {
 
 module.exports = {
   validateCourses,
+  createCourseCheck,
+  updateCourseCheck,
+  deleteCourseCheck,
 }

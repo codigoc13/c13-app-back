@@ -1,28 +1,21 @@
-const { request, response } = require('express')
 const { DateTime } = require('luxon')
+const { request, response } = require('express')
+
 const { Course } = require('../models')
 const { serverErrorHandler } = require('../helpers')
 
 const create = async (req = request, res = response) => {
   try {
-    let { name, description, duration, maxCapacity, minRequired } = req.body
-    name = name.toLowerCase().trim()
-
-    const courseDB = await Course.findOne({ name })
-    if (courseDB) {
-      return res.status(400).json({
-        msg: `Ya existe el curso: ${name}`,
-      })
-    }
+    const { name, description, duration, maxCapacity, minRequired } = req.body
 
     const data = {
-      name,
-      description,
+      createdAt: DateTime.now(),
+      description: description.toLowerCase().trim(),
       duration,
       maxCapacity,
       minRequired,
+      name: name.toLowerCase().trim(),
       user: req.authenticatedUser.id,
-      createdAt: DateTime.now(),
     }
 
     const course = new Course(data)
@@ -68,25 +61,14 @@ const findAll = async (req = request, res = response) => {
 
 const update = async (req = request, res = response) => {
   try {
-    let { name, description, duration, maxCapacity, minRequired } = req.body
+    const { name, description, duration, maxCapacity, minRequired } = req.body
 
     const data = {
       updatedAt: DateTime.now(),
     }
 
-    if (name) {
-      name = name.toLowerCase().trim()
-
-      const courseDB = await Course.findOne({ name })
-      if (courseDB) {
-        return res.status(400).json({
-          msg: `Ya existe el curso: ${name}`,
-        })
-      }
-      data.name = name
-    }
-
-    if (description) data.description = description
+    if (name) data.name = name.toLowerCase().trim()
+    if (description) data.description = description.toLowerCase().trim()
     if (duration) data.duration = duration
     if (maxCapacity) data.maxCapacity = maxCapacity
     if (minRequired) data.minRequired = minRequired
@@ -123,7 +105,7 @@ const deleteById = async (req = request, res = response) => {
 
 module.exports = {
   create,
+  deleteById,
   findAll,
   update,
-  deleteById,
 }
