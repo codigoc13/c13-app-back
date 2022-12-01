@@ -1,6 +1,6 @@
 const { check, body } = require('express-validator')
 
-const { message } = require('../helpers')
+const { message, isObjectId } = require('../helpers')
 const { isValidTitle, noveltytByIdExists } = require('../helpers/validations')
 const { isRole } = require('./validate-roles')
 const { validateFields } = require('./validate-fields')

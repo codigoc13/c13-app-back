@@ -1,4 +1,7 @@
-const { Article } = require('../../models')
+const { DateTime } = require('luxon')
+
+const { Article, User } = require('../../models')
+const { isObjectId } = require('../validate-object-id')
 const { serverErrorHandler } = require('../server-error-handler')
 
 const searchArticles = async (searchTerm = '', res = response) => {
@@ -88,7 +91,9 @@ const searchArticlesByUser = async (searchTerm = '', res = response) => {
     }
 
     const regex = new RegExp(searchTerm, 'i')
-    const users = await User.find({ name: regex })
+    const users = await User.find({
+      $or: [{ firstName: regex }, { lastName: regex }, { username: regex }],
+    })
     const usersIds = users.map((user) => user.id)
 
     const articles = await Article.find({
@@ -99,15 +104,12 @@ const searchArticlesByUser = async (searchTerm = '', res = response) => {
     }).populate('user')
 
     res.status(200).json({
-      queriedFields: ['user_name'],
+      queriedFields: ['user.firstName', 'user.lastName', 'user.username'],
       quantity: articles.length,
       articles,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
 

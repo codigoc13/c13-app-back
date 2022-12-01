@@ -119,7 +119,6 @@ const updateUserCheck = () => {
     check('id')
       .isMongoId()
       .withMessage(message.idIsNotValid)
-      .if(body('id').isMongoId())
       .custom(userByIdExists),
 
     check('firstName')

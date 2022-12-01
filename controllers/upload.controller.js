@@ -17,28 +17,28 @@ const updateImg = async (req = request, res = response) => {
       case 'articles':
         model = await Article.findById(id)
         if (!model) {
-          notFoundException('artículo', id, res)
+          return notFoundException('artículo', id, res)
         }
         break
 
       case 'courses':
         model = await Course.findById(id)
         if (!model) {
-          notFoundException('curso', id, res)
+          return notFoundException('curso', id, res)
         }
         break
 
       case 'novelties':
         model = await Novelty.findById(id)
         if (!model) {
-          notFoundException('noticia', id, res)
+          return notFoundException('noticia', id, res)
         }
         break
 
       case 'users':
         model = await User.findById(id)
         if (!model) {
-          notFoundException('usuario', id, res)
+          return notFoundException('usuario', id, res)
         }
         break
 

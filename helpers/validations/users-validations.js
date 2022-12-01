@@ -1,5 +1,6 @@
 const { User } = require('../../models')
 const { Role } = require('../../models')
+const { isObjectId } = require('../validate-object-id')
 
 const isValidUsername = async (username = '') => {
   const user = await User.findOne({ username })
@@ -26,9 +27,11 @@ const isValidRole = async (role = '') => {
 }
 
 const userByIdExists = async (id = '') => {
-  const userExists = await User.findById(id)
-  if (!userExists) {
-    throw new Error(`Usuario con id '${id}' no existe en la base de datos`)
+  if (isObjectId(id)) {
+    const userExists = await User.findById(id)
+    if (!userExists) {
+      throw new Error(`Usuario con id '${id}' no existe en la base de datos`)
+    }
   }
 }
 

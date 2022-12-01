@@ -44,7 +44,6 @@ const updateArticleCheck = () => {
     check('id')
       .isMongoId()
       .withMessage(message.idIsNotValid)
-      .if(body('id').isMongoId())
       .custom(articleByIdExists),
 
     check('title')
@@ -71,7 +70,6 @@ const deleteArticleCheck = () => {
     check('id')
       .isMongoId()
       .withMessage(message.idIsNotValid)
-      .if(body('id').isMongoId())
       .custom(articleByIdExists),
 
     validateFields,

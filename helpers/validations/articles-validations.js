@@ -1,9 +1,11 @@
 const { Article } = require('../../models')
+const { isObjectId } = require('../validate-object-id')
 
 const articleByIdExists = async (id = '') => {
-  const articleExists = await Article.findById(id)
-  if (!articleExists) {
-    throw new Error(`Artículo con id '${id}' no existe en la base de datos `)
+  if (isObjectId(id)) {
+    const articleExists = await Article.findById(id)
+    if (!articleExists)
+      throw new Error(`Artículo con id '${id}' no existe en la base de datos `)
   }
 }
 

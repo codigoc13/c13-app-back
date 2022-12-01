@@ -1,7 +1,8 @@
 const { DateTime } = require('luxon')
+
+const { isObjectId } = require('../validate-object-id')
 const { Novelty, User } = require('../../models')
 const { serverErrorHandler } = require('../server-error-handler')
-const { isObjectId } = require('../validate-object-id')
 
 const searchNovelties = async (searchTerm = '', res = response) => {
   try {
