@@ -3,7 +3,6 @@ const careersSearches = require('./careers-searches')
 const cohortsSearches = require('./cohorts-searches')
 const coursesSearches = require('./courses-searches')
 const noveltiesSearches = require('./novelties-searches')
-const usersSearches = require('./users-searches')
 
 module.exports = {
   ...articlesSearches,
@@ -11,5 +10,4 @@ module.exports = {
   ...cohortsSearches,
   ...coursesSearches,
   ...noveltiesSearches,
-  ...usersSearches,
 }

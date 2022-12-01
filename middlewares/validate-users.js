@@ -1,15 +1,15 @@
 const { check, body } = require('express-validator')
 
+const { message } = require('../helpers')
 const {
   isValidEmail,
-  isValidRole,
   isValidUsername,
   userByIdExists,
-  message,
-} = require('../helpers')
+  isValidRole,
+} = require('../helpers/validations')
 const { validateFields } = require('./validate-fields')
 const { validateJWT } = require('./validate-jwt')
-const { isRole } = require('./validate-roles')
+const { isRole, isRoleOrOwner } = require('./validate-roles')
 
 const createUserCheck = () => {
   return [
@@ -19,35 +19,35 @@ const createUserCheck = () => {
 
     check('firstName')
       .notEmpty()
-      .withMessage('El nombre es requerido')
+      .withMessage(message.requireMale('nombre'))
       .if(body('firstName').exists())
       .isString()
-      .withMessage('El nombre debe ser una cadena de caracteres')
+      .withMessage(message.stringMale('nombre'))
       .isLength({ min: 3 })
-      .withMessage('El nombre debe contener mínimo de 3 caracteres'),
+      .withMessage(message.lengthMale('nombre', 3)),
 
     check('lastName')
       .notEmpty()
-      .withMessage('El apellido es requerido')
+      .withMessage(message.requireMale('apellido'))
       .if(body('lastName').exists())
       .isString()
-      .withMessage('El apellido debe ser una cadena de caracteres')
+      .withMessage(message.stringMale('apellido'))
       .isLength({ min: 3 })
-      .withMessage('El apellido debe contener mínimo de 3 caracteres'),
+      .withMessage(message.lengthMale('apellido', 3)),
 
     check('username')
       .notEmpty()
-      .withMessage('El nombre de usuario es requerido')
+      .withMessage(message.requireMale('username'))
       .if(body('username').exists())
       .isString()
-      .withMessage('El nombre de usuario debe ser una cadena de caracteres')
+      .withMessage(message.stringMale('username'))
       .isLength({ min: 3 })
-      .withMessage('El nombre de usuario debe contener mínimo de 3 caracteres')
+      .withMessage(message.lengthMale('username', 3))
       .custom(isValidUsername),
 
     check('typeDocument')
       .notEmpty()
-      .withMessage('El tipo de documento es requerido')
+      .withMessage(message.requireMale('tipo de documento'))
       .if(body('typeDocument').exists())
       .isIn(['c.c', 't.i'])
       .withMessage(
@@ -58,14 +58,14 @@ const createUserCheck = () => {
 
     check('numberDocument')
       .notEmpty()
-      .withMessage('El número de documento es requerido'),
+      .withMessage(message.requireMale('número de documento')),
 
     check('address')
       .if(body('address').exists())
       .isString()
-      .withMessage('La dirección debe ser una cadena de caracteres')
+      .withMessage(message.requireFemale('dirección'))
       .isLength({ min: 6 })
-      .withMessage('La dirección debe ser mínimo de 6 caracteres'),
+      .withMessage(message.lengthMale('dirección', 3)),
 
     // FIXME: Validar con máscara los números telefónicos en el array
     check('phoneNumbers')
@@ -83,7 +83,7 @@ const createUserCheck = () => {
 
     check('email')
       .notEmpty()
-      .withMessage('El email es requerido')
+      .withMessage(message.requireMale('email'))
       .if(body('email').exists())
       .isEmail()
       .withMessage('El email debe ser válido (@-.com, etc)')
@@ -91,14 +91,14 @@ const createUserCheck = () => {
 
     check('password')
       .notEmpty()
-      .withMessage('La contraseña es requerida')
+      .withMessage(message.requireFemale('contraseña'))
       .if(body('password').exists())
       .isLength({ min: 6 })
-      .withMessage('La contraseña debe ser mínimo de 6 caracteres'),
+      .withMessage(message.lengthFemale('contraseña', 6)),
 
     check('role')
       .notEmpty()
-      .withMessage('El rol es obligatorio')
+      .withMessage(message.requireFemale('role'))
       .if(body('role').exists())
       .custom(isValidRole),
 
@@ -119,6 +119,7 @@ const updateUserCheck = () => {
     check('id')
       .isMongoId()
       .withMessage(message.idIsNotValid)
+      .if(body('id').isMongoId())
       .custom(userByIdExists),
 
     check('firstName')
@@ -198,16 +199,34 @@ const deleteUserCheck = () => {
 
     check('id')
       .isMongoId()
-      .withMessage('El ID no es válido')
+      .withMessage(message.idIsNotValid)
       .custom(userByIdExists),
 
     validateFields,
   ]
 }
 
+const searchUserByIdCheck = () => {
+  return [
+    validateJWT,
+
+    isRoleOrOwner('admin'),
+
+    check('id').isMongoId().withMessage(message.idIsNotValid),
+
+    validateFields,
+  ]
+}
+
+const searchUsersCheck = () => {
+  return [validateJWT, isRole('admin'), validateFields]
+}
+
 module.exports = {
   createUserCheck,
   deleteUserCheck,
   getUsersCheck,
+  searchUserByIdCheck,
+  searchUsersCheck,
   updateUserCheck,
 }

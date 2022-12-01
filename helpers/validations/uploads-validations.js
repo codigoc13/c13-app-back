@@ -1,4 +1,4 @@
-const allowedCollections = ['users', 'novelties', 'courses']
+const allowedCollections = ['users', 'novelties', 'courses', 'articles']
 
 const validateCollection = (collection = '') => {
   const include = allowedCollections.includes(collection)

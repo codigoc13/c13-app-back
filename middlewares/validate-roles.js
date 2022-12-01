@@ -34,7 +34,29 @@ const isRole = (...roles) => {
   }
 }
 
+const isRoleOrOwner = (...roles) => {
+  return (req = request, res = response, next) => {
+    if (!req.authenticatedUser) {
+      return res.status(500).json({
+        msg: 'Se quiere verificar el rol sin primero validar el token',
+      })
+    }
+
+    if (
+      !roles.includes(req.authenticatedUser.role) &&
+      req.authenticatedUser._id.valueOf() !== req.params.id
+    ) {
+      return res.status(401).json({
+        msg: `El servicio require ser el propietario del recurso o uno de estos roles: ${roles}`,
+      })
+    }
+
+    next()
+  }
+}
+
 module.exports = {
   isAdminRole,
   isRole,
+  isRoleOrOwner,
 }

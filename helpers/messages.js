@@ -6,6 +6,10 @@ const message = {
     `El '${fieldName}' debe ser una cadena de caracteres`,
   stringFemale: (fieldName) =>
     `La '${fieldName}' debe ser una cadena de caracteres`,
+  lengthMale: (fieldName, min) =>
+    `El '${fieldName}' debe contener mínimo ${min} caracteres`,
+  lengthFemale: (fieldName, min) =>
+    `La '${fieldName}' debe contener mínimo ${min} caracteress`,
 }
 
 module.exports = {

@@ -112,4 +112,45 @@ const deleteUser = async (req = request, res = response) => {
   }
 }
 
-module.exports = { create, deleteUser, findAll, update }
+const findById = async (req = request, res = response) => {
+  try {
+    const { id } = req.params
+    const user = await User.findById(id)
+    if (!user) {
+      res.status(400).json({
+        msg: `Usuario con id '${id}' no existe en la base de datos`,
+      })
+    }
+    res.json({
+      user,
+    })
+  } catch (error) {}
+}
+
+const search = async (req = request, res = response) => {
+  try {
+    const { term } = req.params
+    const regex = new RegExp(term, 'i')
+
+    const users = await User.find({
+      $or: [{ firstName: regex }, { lastName: regex }, { username: regex }],
+      $and: [{ status: true }],
+    })
+    res.status(200).json({
+      queriedFields: ['firstName', 'lastName', 'username'],
+      quantity: users.length,
+      results: users,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
+}
+
+module.exports = {
+  create,
+  deleteUser,
+  findAll,
+  findById,
+  search,
+  update,
+}
