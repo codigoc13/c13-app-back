@@ -1,4 +1,4 @@
-const { Article } = require('../models')
+const { Article } = require('../../models')
 
 const articleByIdExists = async (id = '') => {
   const articleExists = await Article.findById(id)

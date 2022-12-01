@@ -23,7 +23,7 @@ const CourseSchema = Schema({
     type: Number,
     required: [true, 'El mínimo es requerido '],
   },
-  imgUrl: {
+  img: {
     type: String,
   },
   user: {

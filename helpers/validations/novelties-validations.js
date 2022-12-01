@@ -1,4 +1,4 @@
-const { Novelty } = require('../models')
+const { Novelty } = require('../../models')
 
 const isValidTitle = async (title = '') => {
   const novelty = await Novelty.findOne({ title: title.toLowerCase().trim() })

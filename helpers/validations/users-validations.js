@@ -1,5 +1,5 @@
-const { User } = require('../models')
-const { Role } = require('../models')
+const { User } = require('../../models')
+const { Role } = require('../../models')
 
 const isValidUsername = async (username = '') => {
   const user = await User.findOne({ username })

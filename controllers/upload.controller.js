@@ -5,7 +5,7 @@ const { serverErrorHandler } = require('../helpers')
 const cloudinary = require('cloudinary').v2
 cloudinary.config(process.env.CLOUDINARY_URL)
 
-const { User, Novelty } = require('../models')
+const { User, Novelty, Course } = require('../models')
 
 const updateImg = async (req = request, res = response) => {
   try {
@@ -28,6 +28,15 @@ const updateImg = async (req = request, res = response) => {
         if (!model) {
           return res.status(400).json({
             msg: `No existe una noticia con el id ${id}`,
+          })
+        }
+        break
+
+      case 'courses':
+        model = await Course.findById(id)
+        if (!model) {
+          return res.status(400).json({
+            msg: `No existe un curso con el id ${id}`,
           })
         }
         break
