@@ -1,13 +1,4 @@
-const {
-  Category,
-  Role,
-  User,
-  Product,
-  Novelty,
-  Course,
-  Career,
-  Cohort,
-} = require('../models')
+const { Category, Product, Course, Career, Cohort } = require('../models')
 
 /**
  * Validación contra la BD de usuarios
@@ -45,20 +36,6 @@ const productByIdExists = async (id = '') => {
 }
 
 /**
- *  Validar colecciones permitidas
- */
-
-/**
- * Validaciones contra la BD de noticias
- */
-const noveltytByIdExists = async (id = '') => {
-  const noveltyExists = await Novelty.findById(id)
-  if (!noveltyExists) {
-    throw new Error(`Noticia con id '${id}' no existe en la base de datos`)
-  }
-}
-
-/**
  * Validar contra la BD de artículos
  */
 
@@ -81,6 +58,5 @@ module.exports = {
   categoryByIdExists,
   cohortByIdExists,
   courseByIdExists,
-  noveltytByIdExists,
   productByIdExists,
 }

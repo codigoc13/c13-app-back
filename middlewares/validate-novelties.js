@@ -1,6 +1,7 @@
 const { check, body } = require('express-validator')
 
-const { isValidTitle, message, noveltytByIdExists } = require('../helpers')
+const { message } = require('../helpers')
+const { isValidTitle, noveltytByIdExists } = require('../helpers/validations')
 const { isRole } = require('./validate-roles')
 const { validateFields } = require('./validate-fields')
 const { validateJWT } = require('./validate-jwt')
@@ -13,18 +14,18 @@ const createNoveltyCheck = () => {
 
     check('title')
       .notEmpty()
-      .withMessage('El título es requerido')
+      .withMessage(message.requireMale('título'))
       .if(body('title').exists())
       .isString()
-      .withMessage('El título debe ser una cadena de caracteres')
+      .withMessage(message.stringMale('título'))
       .custom(isValidTitle),
 
     check('description')
       .notEmpty()
-      .withMessage('La descripción es requerida')
+      .withMessage(message.requireMale('descripción'))
       .if(body('description').exists())
       .isString()
-      .withMessage('La descripción debe ser una cadena de caracteres'),
+      .withMessage(message.stringFemale('descripción')),
 
     validateFields,
   ]
@@ -44,13 +45,13 @@ const updateNoveltyCheck = () => {
     check('title')
       .if(body('title').exists())
       .isString()
-      .withMessage('El título debe ser una cadena de caracteres')
+      .withMessage(message.stringMale('título'))
       .custom(isValidTitle),
 
     check('description')
       .if(body('description').exists())
       .isString()
-      .withMessage('La descripción debe ser una cadena de caracteres'),
+      .withMessage(message.stringFemale('descripción')),
 
     validateFields,
   ]

@@ -7,6 +7,14 @@ const isValidTitle = async (title = '') => {
   }
 }
 
+const noveltytByIdExists = async (id = '') => {
+  const noveltyExists = await Novelty.findById(id)
+  if (!noveltyExists) {
+    throw new Error(`Noticia con id '${id}' no existe en la base de datos`)
+  }
+}
+
 module.exports = {
   isValidTitle,
+  noveltytByIdExists,
 }

@@ -82,7 +82,7 @@ const update = async (req = request, res = response) => {
 
 const deleteById = async (req = request, res = response) => {
   try {
-    const novelty = await Novelty.findByIdAndUpdate(
+    const deletedNovelty = await Novelty.findByIdAndUpdate(
       req.params.id,
       {
         status: false,
@@ -91,7 +91,7 @@ const deleteById = async (req = request, res = response) => {
       { new: true }
     )
     res.json({
-      novelty,
+      deletedNovelty,
     })
   } catch (error) {
     handlerErrorServer(error)

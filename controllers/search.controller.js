@@ -13,6 +13,7 @@ const {
   searchCourses,
   searchCoursesByUser,
   searchNovelties,
+  searchNoveltiesByUser,
 } = require('../helpers/searches')
 
 const allowedCollections = [
@@ -28,6 +29,7 @@ const allowedCollections = [
   'courses',
   'coursesByUser',
   'novelties',
+  'noveltiesByUser',
 ]
 
 const search = (req = request, res = response) => {
@@ -74,6 +76,9 @@ const search = (req = request, res = response) => {
         break
       case 'novelties':
         searchNovelties(searchTerm, res)
+        break
+      case 'noveltiesByUser':
+        searchNoveltiesByUser(searchTerm, res)
         break
       default:
         res.status(500).json({
