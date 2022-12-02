@@ -47,8 +47,13 @@ const CourseSchema = Schema({
 CourseSchema.methods.toJSON = function () {
   const { __v, _id, status, createdAt, updatedAt, ...course } = this.toObject()
   course.id = _id
-  course.createdAt = DateTime.fromISO(createdAt.toISOString())
-  if (updatedAt) course.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+  course.createdAt = DateTime.fromJSDate(createdAt, {
+    zone: 'America/Bogota',
+  })
+  if (updatedAt)
+    course.updatedAt = DateTime.fromJSDate(updatedAt, {
+      zone: 'America/Bogota',
+    })
 
   const {
     __v: u__v,
