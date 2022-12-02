@@ -1,9 +1,14 @@
+const { DateTime } = require('luxon')
+const { Career, User, Course } = require('../../models')
 const { serverErrorHandler } = require('../server-error-handler')
+const { isObjectId } = require('../validate-object-id')
 
 const searchCareers = async (searchTerm = '', res = response) => {
   try {
     if (isObjectId(searchTerm)) {
-      const career = await Career.findById(searchTerm).populate('user')
+      const career = await Career.findById(searchTerm)
+        .populate('courses')
+        .populate('user')
 
       return res.status(200).json({
         queriedFields: ['id'],
@@ -56,7 +61,7 @@ const searchCareers = async (searchTerm = '', res = response) => {
       }).populate('user')
 
       return res.status(200).json({
-        queriedFields: ['available'],
+        queriedFields: ['status'],
         quantity: careers.length,
         careers,
       })
@@ -79,36 +84,52 @@ const searchCareers = async (searchTerm = '', res = response) => {
 const searchCareersByUser = async (searchTerm = '', res = response) => {
   try {
     if (isObjectId(searchTerm)) {
-      const career = await Career.find({ user: searchTerm })
+      const career = await Career.find({
+        $or: [{ user: searchTerm }, { courses: { _id: searchTerm } }],
+        $and: { status: true },
+      })
         .populate('user')
         .populate('courses')
       return res.status(200).json({
-        queriedFields: ['user_id'],
+        queriedFields: ['user.id', 'courses.*.id'],
         results: career ? [career] : [],
       })
     }
 
     const regex = new RegExp(searchTerm, 'i')
-    const users = await User.find({ name: regex })
+    const users = await User.find({
+      $or: [{ firstName: regex }, { lastName: regex }, { username: regex }],
+    })
     const usersIds = users.map((user) => user.id)
 
+    console.log(usersIds)
+
+    const courses = await Course.find({ name: regex })
+    const coursesIds = courses.map((course) => course.id)
+
+    console.log(coursesIds)
+
     const careers = await Career.find({
-      user: {
-        $in: usersIds,
-      },
-      status: true,
-    }).populate('user')
+      $or: [
+        { user: { $in: usersIds }, status: true },
+        { courses: { $in: coursesIds }, status: true },
+      ],
+    })
+      .populate('user')
+      .populate('courses')
 
     res.status(200).json({
-      queriedFields: ['user_name'],
+      queriedFields: [
+        'user.firstName',
+        'user.lastName',
+        'user.username',
+        'course.name',
+      ],
       quantity: careers.length,
       careers,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Error en el servidor',
-    })
+    serverErrorHandler(error, res)
   }
 }
 

@@ -5,6 +5,7 @@ const CareerSchema = Schema({
   name: {
     type: String,
     required: [true, 'El nombre es requerido'],
+    unique: true,
   },
   description: {
     type: String,
@@ -13,7 +14,6 @@ const CareerSchema = Schema({
   duration: {
     type: Number,
     required: [true, 'La duración es requerida'],
-    // medida de tiempo: semanas
   },
   maxCapacity: {
     type: Number,
@@ -23,7 +23,7 @@ const CareerSchema = Schema({
     type: Number,
     required: [true, 'El mínimo es requerido '],
   },
-  imgUrl: {
+  img: {
     type: String,
   },
   courses: {

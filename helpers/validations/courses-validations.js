@@ -27,7 +27,12 @@ const coursesByIdsExist = async (coursesIds = []) => {
   })
 
   if (invalidIds.length > 0) {
-    throw new Error(`Debe ser id de mongo válidos: ${invalidIds.join(', ')}`)
+    if (invalidIds.length === 1)
+      throw new Error(`Se envío un id no válido de Mongo: ${invalidIds}`)
+    else
+      throw new Error(
+        `Se enviaron ids no válidos de Mongo: ${invalidIds.join(', ')}`
+      )
   }
 
   const coursesDB = await Course.find({ _id: { $in: coursesIds } })

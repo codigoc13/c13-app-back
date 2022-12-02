@@ -1,29 +1,19 @@
-const { request, response } = require('express')
 const { DateTime } = require('luxon')
+const { request, response } = require('express')
 
-const { serverErrorHandler } = require('../helpers/server-error-handler')
 const { Career } = require('../models')
+const { serverErrorHandler } = require('../helpers/server-error-handler')
 
 const createCareer = async (req = request, res = response) => {
   try {
-    let { name, status, ...body } = req.body
-
-    name = req.body.name.toLowerCase().trim()
-    description = req.body.description.toLowerCase().trim()
-    const careerDB = await Career.findOne({ name })
-
-    if (careerDB) {
-      return res.status(400).json({
-        msg: `La carrera ${careerDB.name} ya existe`,
-      })
-    }
+    const { name, description, status, img, updatedAt, ...body } = req.body
 
     const data = {
       ...body,
-      name,
-      courses: req.coursesDB,
-      user: req.authenticatedUser.id,
       createdAt: DateTime.now(),
+      description: description.toLowerCase().trim(),
+      name: name.toLowerCase().trim(),
+      user: req.authenticatedUser.id,
     }
 
     const career = new Career(data)
@@ -73,29 +63,19 @@ const getCareers = async (req = request, res = response) => {
 
 const updateCareer = async (req = request, res = response) => {
   try {
-    let { name, description, duration, maxCapacity, minRequired } = req.body
+    const { name, description, duration, maxCapacity, minRequired, courses } =
+      req.body
 
     const data = {
       updatedAt: DateTime.now(),
     }
 
-    if (name) {
-      name = name.toLowerCase().trim()
-
-      const careerDB = await Career.findOne({ name })
-      if (careerDB) {
-        return res.status(400).json({
-          msg: `La carrera ${careerDB.name} ya existe`,
-        })
-      }
-      data.name = name
-    }
-
+    if (name) data.name = name.toLowerCase().trim()
     if (description) data.description = description.toLowerCase().trim()
     if (duration) data.duration = duration
     if (maxCapacity) data.maxCapacity = maxCapacity
     if (minRequired) data.minRequired = minRequired
-    if (req.coursesDB) data.courses = req.coursesDB
+    if (courses) data.courses = courses
 
     const career = await Career.findByIdAndUpdate(req.params.id, data, {
       new: true,
@@ -111,15 +91,14 @@ const updateCareer = async (req = request, res = response) => {
 
 const deleteCareer = async (req = request, res = response) => {
   try {
-    const { id } = req.params
-    const query = { status: false, updatedAt: DateTime.now() }
-
-    const deleteCareer = await Career.findByIdAndUpdate(id, query, {
-      new: true,
-    })
+    const deletedCareer = await Career.findByIdAndUpdate(
+      req.params.id,
+      { status: false, updatedAt: DateTime.now() },
+      { new: true }
+    )
 
     res.status(200).json({
-      deleteCareer,
+      deletedCareer,
     })
   } catch (error) {
     serverErrorHandler(error, res)
@@ -127,8 +106,8 @@ const deleteCareer = async (req = request, res = response) => {
 }
 
 module.exports = {
-  getCareers,
   createCareer,
   deleteCareer,
+  getCareers,
   updateCareer,
 }

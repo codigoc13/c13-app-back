@@ -5,7 +5,7 @@ const { serverErrorHandler } = require('../helpers')
 const cloudinary = require('cloudinary').v2
 cloudinary.config(process.env.CLOUDINARY_URL)
 
-const { User, Novelty, Course, Article } = require('../models')
+const { User, Novelty, Course, Article, Career } = require('../models')
 
 const updateImg = async (req = request, res = response) => {
   try {
@@ -18,6 +18,13 @@ const updateImg = async (req = request, res = response) => {
         model = await Article.findById(id)
         if (!model) {
           return notFoundException('artículo', id, res)
+        }
+        break
+
+      case 'careers':
+        model = await Career.findById(id)
+        if (!model) {
+          return notFoundException('carrera', id, res)
         }
         break
 
@@ -71,7 +78,7 @@ const updateImg = async (req = request, res = response) => {
 
 const notFoundException = (modelo = '', id = '', res = response) => {
   return res.status(400).json({
-    msg: `No existe un '${modelo}' con el id '${id}'`,
+    msg: `No existe un modelo '${modelo}' con el id '${id}'`,
   })
 }
 

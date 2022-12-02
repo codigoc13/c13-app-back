@@ -85,7 +85,7 @@ const searchArticlesByUser = async (searchTerm = '', res = response) => {
     if (isObjectId(searchTerm)) {
       const article = await Article.find({ user: searchTerm }).populate('user')
       return res.status(200).json({
-        queriedFields: ['user_id'],
+        queriedFields: ['user.id'],
         results: article ? [article] : [],
       })
     }
