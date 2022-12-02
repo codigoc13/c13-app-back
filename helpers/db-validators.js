@@ -1,4 +1,4 @@
-const { Category, Product, Career, Cohort } = require('../models')
+const { Category, Product, Cohort } = require('../models')
 
 /**
  * Validación contra la BD de categorías
@@ -7,17 +7,6 @@ const categoryByIdExists = async (id = '') => {
   const categoryExists = await Category.findById(id)
   if (!categoryExists) {
     throw new Error(`Categoría con id '${id}' no existe en la base de datos`)
-  }
-}
-
-/**
- * Validar contra la BD de artículos
- */
-
-const careerByIdExists = async (id = '') => {
-  const careerExists = await Career.findById(id)
-  if (!careerExists) {
-    throw new Error(`La carrera con id '${id}' no existe en la base de datos `)
   }
 }
 
@@ -43,7 +32,6 @@ const cohortByIdExists = async (id = '') => {
 }
 
 module.exports = {
-  careerByIdExists,
   categoryByIdExists,
   cohortByIdExists,
   productByIdExists,

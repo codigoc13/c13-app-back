@@ -2,16 +2,15 @@ const { check, body } = require('express-validator')
 const { response, request } = require('express')
 
 const { Career } = require('../models')
-const { isObjectId } = require('../helpers/validate-object-id')
-const { serverErrorHandler } = require('../helpers/server-error-handler')
-const { validateCourses } = require('./validate-courses')
+const { isObjectId, serverErrorHandler, message } = require('../helpers')
+const {
+  careerByIdExists,
+  coursesByIdsExist,
+  isValidNameCareer,
+} = require('../helpers/validations')
+const { isRole } = require('./validate-roles')
 const { validateFields } = require('./validate-fields')
 const { validateJWT } = require('./validate-jwt')
-const {
-  isValidNameCareer,
-} = require('../helpers/validations/careers-validations')
-const { careerByIdExists, message } = require('../helpers')
-const { isRole } = require('./validate-roles')
 
 const validateCareers = async (req = request, res = response, next) => {
   try {
@@ -95,7 +94,7 @@ const createCareerCheck = () => {
       .isNumeric()
       .withMessage('El valor mínimo debe ser numérico'),
 
-    check('courses').if(body('courses').exists()).custom(validateCourses),
+    check('courses').if(body('courses').exists()).custom(coursesByIdsExist),
 
     validateFields,
   ]
@@ -138,14 +137,24 @@ const updateCareerCheck = () => {
       .isNumeric()
       .withMessage('La valor mínimo debe ser numérico'),
 
-    check('courses').if(body('courses').exists()).custom(validateCourses),
+    check('courses').if(body('courses').exists()).custom(coursesByIdsExist),
 
     validateFields,
   ]
 }
 
 const deleteCareerCheck = () => {
-  return [validateJWT, isRole('admin'), validateFields]
+  return [
+    validateJWT,
+
+    check('id')
+      .isMongoId()
+      .withMessage(message.idIsNotValid)
+      .custom(careerByIdExists),
+
+    isRole('admin'),
+    validateFields,
+  ]
 }
 
 module.exports = {
