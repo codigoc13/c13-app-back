@@ -16,9 +16,9 @@ const router = Router()
 
 router.post('/', createCareerCheck(), createCareer)
 
-router.get('/', updateCareerCheck(), getCareers)
+router.get('/', getCareers)
 
-router.patch('/:id', updateCareer)
+router.patch('/:id', updateCareerCheck(), updateCareer)
 
 router.delete('/:id', deleteCareerCheck(), deleteCareer)
 
