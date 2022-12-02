@@ -18,8 +18,6 @@ const courseByIdExists = async (id = '') => {
 }
 
 const coursesByIdsExist = async (coursesIds = []) => {
-  console.log(coursesIds)
-
   const invalidIds = coursesIds.filter((id) => {
     if (!isObjectId(id)) {
       return id
@@ -45,11 +43,16 @@ const coursesByIdsExist = async (coursesIds = []) => {
   })
 
   if (coursesIdsNotFound.length > 0) {
-    throw new Error(
-      `Los siguientes cursos no existen en la BD: ${coursesIdsNotFound.join(
-        ', '
-      )}`
-    )
+    if (coursesIdsNotFound.length === 1)
+      throw new Error(
+        `El siguiente curso no existe en la BD: ${coursesIdsNotFound}`
+      )
+    else
+      throw new Error(
+        `Los siguientes cursos no existen en la BD: ${coursesIdsNotFound.join(
+          ', '
+        )}`
+      )
   }
 }
 

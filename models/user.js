@@ -64,7 +64,6 @@ UserSchema.methods.toJSON = function () {
 
   user.id = _id
 
-  // user.createdAt = DateTime.fromISO(createdAt.toISOString())
   user.createdAt = DateTime.fromJSDate(createdAt, {
     zone: 'America/Bogota',
   })

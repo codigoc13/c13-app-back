@@ -35,8 +35,14 @@ const NoveltySchema = Schema({
 NoveltySchema.methods.toJSON = function () {
   const { __v, _id, status, createdAt, updatedAt, ...novelty } = this.toObject()
   novelty.id = _id
-  novelty.createdAt = DateTime.fromISO(createdAt.toISOString())
-  if (updatedAt) novelty.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+
+  novelty.createdAt = DateTime.fromJSDate(createdAt, {
+    zone: 'America/Bogota',
+  })
+  if (updatedAt)
+    novelty.updatedAt = DateTime.fromJSDate(updatedAt, {
+      zone: 'America/Bogota',
+    })
 
   const {
     __v: u__v,
