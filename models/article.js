@@ -36,10 +36,15 @@ ArticleSchema.methods.toJSON = function () {
   const { __v, _id, status, createdAt, updatedAt, ...article } = this.toObject()
 
   article.id = _id
-  article.createdAt = DateTime.fromISO(createdAt.toISOString())
+
+  article.createdAt = DateTime.fromJSDate(createdAt, {
+    zone: 'America/Bogota',
+  })
 
   if (updatedAt) {
-    article.updatedAt = DateTime.fromISO(updatedAt.toISOString())
+    article.updatedAt = DateTime.fromJSDate(updatedAt, {
+      zone: 'America/Bogota',
+    })
   }
 
   const {
