@@ -39,6 +39,7 @@ NoveltySchema.methods.toJSON = function () {
   novelty.createdAt = DateTime.fromJSDate(createdAt, {
     zone: 'America/Bogota',
   })
+
   if (updatedAt)
     novelty.updatedAt = DateTime.fromJSDate(updatedAt, {
       zone: 'America/Bogota',

@@ -25,6 +25,7 @@ const InvoiceSchema = Schema({
 InvoiceSchema.methods.toJSON = function () {
   const { __v, _id, createdAt, ...invoice } = this.toObject()
   invoice.id = _id
+
   invoice.createdAt = DateTime.fromISO(createdAt.toISOString())
 
   const { _id: _uId, password, __v: __uV, ...user } = invoice.user
