@@ -6,6 +6,7 @@ const {
   isValidUsername,
   userByIdExists,
   isValidRole,
+  isValidNumberDocument,
 } = require('../helpers/validations')
 const { validateFields } = require('./validate-fields')
 const { validateJWT } = require('./validate-jwt')
@@ -55,10 +56,11 @@ const createUserCheck = () => {
       ),
 
     // FIXME: Validar que solo se pueda ingresar un string de números.
-
     check('numberDocument')
       .notEmpty()
-      .withMessage(message.requireMale('número de documento')),
+      .withMessage(message.requireMale('número de documento'))
+      .if(body('numberDocument').exists())
+      .custom(isValidNumberDocument),
 
     check('address')
       .if(body('address').exists())
@@ -151,6 +153,9 @@ const updateUserCheck = () => {
       ),
 
     // FIXME: Validar que solo se pueda ingresar un string de números en el campor numberDocument.
+    check('numberDocument')
+      .if(body('numberDocument').exists())
+      .custom(isValidNumberDocument),
 
     check('address')
       .if(body('address').exists())

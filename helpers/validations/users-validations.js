@@ -84,10 +84,20 @@ const participantsByIdsExist = async (usersIds = []) => {
   }
 }
 
+const isValidNumberDocument = async (numberDocument = '') => {
+  const userExists = await User.find({ numberDocument })
+  if (userExists.length > 0) {
+    throw new Error(
+      `Usuario con número de documento '${numberDocument}' ya existe en la base de datos`
+    )
+  }
+}
+
 module.exports = {
   isValidEmail,
   isValidRole,
   isValidUsername,
   participantsByIdsExist,
   userByIdExists,
+  isValidNumberDocument,
 }
