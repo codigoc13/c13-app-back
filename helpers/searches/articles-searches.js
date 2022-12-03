@@ -51,19 +51,19 @@ const searchArticles = async (searchTerm = '', res = response) => {
       })
     }
 
-    const regex = new RegExp(searchTerm, 'i')
-
-    if (regex.test('true') || regex.test('false')) {
+    if (searchTerm === 'true' || searchTerm === 'false') {
       const articles = await Article.find({
-        status: regex.test('true'),
+        status: searchTerm === 'true',
       }).populate('user')
 
       return res.status(200).json({
-        queriedFields: ['status'],
+        queriedFields: [`status: ${searchTerm}`],
         quantity: articles.length,
         articles,
       })
     }
+
+    const regex = new RegExp(searchTerm, 'i')
 
     const articles = await Article.find({
       title: regex,
