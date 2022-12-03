@@ -1,4 +1,3 @@
-const dbValidators = require('./db-validators')
 const generateJWT = require('./generate-jwt')
 const googleVerify = require('./google-verify')
 const messages = require('./messages')
@@ -7,7 +6,6 @@ const uploadFile = require('./upload-file')
 const validateObjectId = require('./validate-object-id')
 
 module.exports = {
-  ...dbValidators,
   ...generateJWT,
   ...googleVerify,
   ...messages,

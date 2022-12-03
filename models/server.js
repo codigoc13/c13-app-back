@@ -13,12 +13,9 @@ class Server {
       articles: '/api/articles',
       auth: '/api/auth',
       careers: '/api/careers',
-      categories: '/api/categories',
       cohorts: '/api/cohorts',
       courses: '/api/courses',
-      invoices: '/api/invoices',
       novelties: '/api/novelties',
-      products: '/api/products',
       search: '/api/search',
       uploads: '/api/uploads',
       users: '/api/users',
@@ -62,12 +59,9 @@ class Server {
     this.app.use(this.paths.articles, require('../routes/article.routes'))
     this.app.use(this.paths.auth, require('../routes/auth.routes'))
     this.app.use(this.paths.careers, require('../routes/career.routes'))
-    this.app.use(this.paths.categories, require('../routes/category.routes'))
     this.app.use(this.paths.cohorts, require('../routes/cohort.routes'))
     this.app.use(this.paths.courses, require('../routes/course.routes'))
-    this.app.use(this.paths.invoices, require('../routes/invoice.routes'))
     this.app.use(this.paths.novelties, require('../routes/novelty.routes'))
-    this.app.use(this.paths.products, require('../routes/product.routes'))
     this.app.use(this.paths.search, require('../routes/search.routes'))
     this.app.use(this.paths.uploads, require('../routes/upload.routes'))
     this.app.use(this.paths.users, require('../routes/user.routes'))
