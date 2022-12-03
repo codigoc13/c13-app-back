@@ -5,7 +5,7 @@ const { serverErrorHandler } = require('../helpers')
 const cloudinary = require('cloudinary').v2
 cloudinary.config(process.env.CLOUDINARY_URL)
 
-const { User, Novelty, Course, Article, Career } = require('../models')
+const { Article, Career, Cohort, Course, Novelty, User } = require('../models')
 
 const updateImg = async (req = request, res = response) => {
   try {
@@ -32,6 +32,13 @@ const updateImg = async (req = request, res = response) => {
         model = await Course.findById(id)
         if (!model) {
           return notFoundException('curso', id, res)
+        }
+        break
+
+      case 'cohorts':
+        model = await Cohort.findById(id)
+        if (!model) {
+          return notFoundException('cohorte', id, res)
         }
         break
 

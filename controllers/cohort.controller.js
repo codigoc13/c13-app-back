@@ -211,11 +211,10 @@ const searchByEntities = async (req = request, res = response) => {
     if (isObjectId(searchTerm)) {
       const cohort = await Cohort.find({
         $or: [
-          { user: searchTerm },
-          { careers: { _id: searchTerm } },
-          { participants: { _id: searchTerm } },
+          { user: searchTerm, status: true },
+          { careers: { _id: searchTerm }, status: true },
+          { participants: { _id: searchTerm }, status: true },
         ],
-        $and: { status: true },
       })
         .populate('user')
         .populate('careers')

@@ -1,6 +1,7 @@
 const allowedCollections = [
   'articles',
   'careers',
+  'cohorts',
   'courses',
   'novelties',
   'users',
