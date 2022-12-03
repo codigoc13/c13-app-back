@@ -3,7 +3,7 @@ const { request, response } = require('express')
 
 const { Cohort } = require('../models')
 const { serverErrorHandler } = require('../helpers/server-error-handler')
-const { populate } = require('../models/article')
+const { isObjectId } = require('../helpers')
 
 const createCohort = async (req = request, res = response) => {
   try {
@@ -116,4 +116,98 @@ const deleteCohort = async (req = request, res = response) => {
   }
 }
 
-module.exports = { createCohort, getCohorts, updateCohort, deleteCohort }
+const search = async (req = request, res = response) => {
+  try {
+    const { term: searchTerm } = req.params
+
+    if (isObjectId(searchTerm)) {
+      const cohort = await Cohort.findById(searchTerm)
+        .populate('user')
+        .populate('careers')
+        .populate('participants')
+
+      return res.status(200).json({
+        queriedFields: ['id'],
+        results: cohort ? [cohort] : [],
+      })
+    }
+
+    //2022-10-23T12:50:30.210Z
+    const date = DateTime.fromFormat(searchTerm, 'yyyy-MM-dd').toUTC()
+
+    if (!date.invalid) {
+      const UTCCreatedAt = { date: '$createdAt', timezone: 'America/Bogota' }
+      const UTCUpdatedAt = { date: '$updatedAt', timezone: 'America/Bogota' }
+      const cohorts = await Cohort.find({
+        $or: [
+          {
+            $expr: {
+              $and: [{ $eq: [{ $year: UTCCreatedAt }, { $year: date }] }],
+              $and: [{ $eq: [{ $month: UTCCreatedAt }, { $month: date }] }],
+              $and: [
+                { $eq: [{ $dayOfMonth: UTCCreatedAt }, { $dayOfMonth: date }] },
+              ],
+            },
+          },
+          {
+            $expr: {
+              $and: [{ $eq: [{ $year: UTCUpdatedAt }, { $year: date }] }],
+              $and: [{ $eq: [{ $month: UTCUpdatedAt }, { $month: date }] }],
+              $and: [
+                { $eq: [{ $dayOfMonth: UTCUpdatedAt }, { $dayOfMonth: date }] },
+              ],
+            },
+          },
+        ],
+        $and: [{ status: true }],
+      })
+        .populate('user')
+        .populate('careers')
+        .populate('participants')
+
+      return res.status(200).json({
+        queriedFields: ['createdAt', 'updatedAt'],
+        quantity: cohorts.length,
+        cohorts,
+      })
+    }
+
+    if (searchTerm === 'true' || searchTerm === 'false') {
+      const cohorts = await Cohort.find({
+        status: searchTerm === 'true',
+      })
+        .populate('user')
+        .populate('careers')
+        .populate('participants')
+
+      return res.status(200).json({
+        queriedFields: ['status'],
+        quantity: cohorts.length,
+        cohorts,
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+
+    const cohorts = await Cohort.find({ code: regex, status: true })
+      .populate('user')
+      .populate('careers')
+      .populate('participants')
+
+    res.status(200).json({
+      queriedFields: ['code'],
+      quantity: cohorts.length,
+      cohorts,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
+}
+
+module.exports = {
+  createCohort,
+  getCohorts,
+  updateCohort,
+  deleteCohort,
+  search,
+}

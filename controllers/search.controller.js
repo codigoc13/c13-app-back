@@ -6,10 +6,6 @@ const {
   searchArticlesByUser,
   searchCareers,
   searchCareersByUser,
-  searchCohorts,
-  searchCohortsByCareer,
-  searchCohortsByParticipant,
-  searchCohortsByUser,
   searchCourses,
   searchCoursesByUser,
   searchNovelties,
@@ -22,10 +18,6 @@ const allowedCollections = [
   'careers',
   'careersByUser',
   'categories',
-  'cohorts',
-  'cohortsByCareer',
-  'cohortsByParticipant',
-  'cohortsByUser',
   'courses',
   'coursesByUser',
   'novelties',
@@ -55,18 +47,6 @@ const search = (req = request, res = response) => {
         break
       case 'careersByUser':
         searchCareersByUser(searchTerm, res)
-        break
-      case 'cohorts':
-        searchCohorts(searchTerm, res)
-        break
-      case 'cohortsByCareer':
-        searchCohortsByCareer(searchTerm, res)
-        break
-      case 'cohortsByParticipant':
-        searchCohortsByParticipant(searchTerm, res)
-        break
-      case 'cohortsByUser':
-        searchCohortsByUser(searchTerm, res)
         break
       case 'courses':
         searchCourses(searchTerm, res)

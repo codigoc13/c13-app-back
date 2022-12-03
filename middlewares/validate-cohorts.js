@@ -101,8 +101,13 @@ const deleteCohortCheck = () => {
   ]
 }
 
+const getCohortCheck = () => {
+  return [validateJWT, isRole('admin')]
+}
+
 module.exports = {
   createCohortCheck,
   deleteCohortCheck,
   updateCohortCheck,
+  getCohortCheck,
 }
