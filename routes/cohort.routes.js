@@ -8,52 +8,24 @@ const {
 } = require('../controllers/cohort.controller')
 const { cohortByIdExists } = require('../helpers/db-validators')
 const { validateParticipants } = require('../middlewares/validate-participants')
-const { validateFields, validateJWT, isRole } = require('../middlewares')
+const {
+  validateFields,
+  validateJWT,
+  isRole,
+  createCohortCheck,
+  updateCohortCheck,
+  deleteCohortCheck,
+} = require('../middlewares')
 const { validateCareers } = require('../middlewares/validate-careers')
 
 const router = Router()
 
+router.post('/', createCohortCheck(), createCohort)
+
 router.get('/', getCohorts)
 
-router.post(
-  '/',
-  [
-    validateJWT,
-    isRole('ADMIN_ROLE'),
-    check('code', 'El código es obligatorio').not().isEmpty(),
-    check('duration', 'La duración es obligatoria').not().isEmpty(),
-    check('quantity', 'La cantidad es obligatoria').not().isEmpty(),
-    validateCareers,
-    validateParticipants,
-    validateFields,
-  ],
-  createCohort
-)
+router.patch('/:id', updateCohortCheck(), updateCohort)
 
-router.patch(
-  '/:id',
-  [
-    validateJWT,
-    isRole('ADMIN_ROLE'),
-    check('id', 'El ID no es válido').isMongoId(),
-    check('id').custom(cohortByIdExists),
-    validateCareers,
-    validateParticipants,
-    validateFields,
-  ],
-  updateCohort
-)
-
-router.delete(
-  '/:id',
-  [
-    validateJWT,
-    isRole('ADMIN_ROLE'),
-    check('id', 'El id debe ser válido de Mongo').isMongoId(),
-    check('id').custom(cohortByIdExists),
-    validateFields,
-  ],
-  deleteCohort
-)
+router.delete('/:id', deleteCohortCheck(), deleteCohort)
 
 module.exports = router

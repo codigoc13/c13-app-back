@@ -35,4 +35,59 @@ const userByIdExists = async (id = '') => {
   }
 }
 
-module.exports = { userByIdExists, isValidEmail, isValidRole, isValidUsername }
+const participantsByIdsExist = async (usersIds = []) => {
+  const invalidIds = usersIds.filter((userId) => {
+    if (!isObjectId(userId)) {
+      return userId
+    }
+  })
+
+  if (invalidIds.length > 0) {
+    if (invalidIds.length === 1)
+      throw new Error(`Se envío un id no válido de Mongo: ${invalidIds}`)
+    else
+      throw new Error(
+        `Se enviaron ids no válidos de Mongo: ${invalidIds.join(', ')}`
+      )
+  }
+
+  const usersDB = await User.find({ _id: { $in: usersIds } })
+  const usersIdsDB = usersDB.map((userDB) => userDB._id.valueOf())
+
+  const usersIdsNotFound = usersIds.filter((userId) => {
+    if (!usersIdsDB.includes(userId)) {
+      return userId
+    }
+  })
+
+  if (usersIdsNotFound.length > 0) {
+    if (usersIdsNotFound.length === 1)
+      throw new Error(
+        `El siguiente participante no existe en la BD: ${usersIdsNotFound}`
+      )
+    else
+      throw new Error(
+        `Los siguientes participantes no existen en la BD: ${usersIdsNotFound.join(
+          ', '
+        )}`
+      )
+  }
+
+  const usersWrongRole = usersDB.filter((userDB) => {
+    return userDB.role !== 'student'
+  })
+
+  if (usersWrongRole.length > 0) {
+    throw new Error(
+      `Los siguiente usuarios no tienen rol de estudiante: ${usersWrongRole}`
+    )
+  }
+}
+
+module.exports = {
+  isValidEmail,
+  isValidRole,
+  isValidUsername,
+  participantsByIdsExist,
+  userByIdExists,
+}

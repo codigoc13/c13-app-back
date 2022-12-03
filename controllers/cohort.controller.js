@@ -1,28 +1,20 @@
-const { request, response } = require('express')
 const { DateTime } = require('luxon')
-const { serverErrorHandler } = require('../helpers/server-error-handler')
+const { request, response } = require('express')
+
 const { Cohort } = require('../models')
+const { serverErrorHandler } = require('../helpers/server-error-handler')
+const { populate } = require('../models/article')
 
 const createCohort = async (req = request, res = response) => {
   try {
-    let { code, ...body } = req.body
-
-    code = code.toUpperCase().trim()
-    const codeBD = await Cohort.findOne({ code })
-    if (codeBD) {
-      return res.status(400).json({
-        msg: `La cohorte con el código ${codeBD.code} ya existe`,
-      })
-    }
+    const { description, status, ...body } = req.body
 
     const data = {
       ...body,
-      careers: req.careersDB,
-      code,
       createdAt: DateTime.now(),
       user: req.authenticatedUser.id,
-      participants: req.usersDB,
     }
+    if (description) data.description = description.toLowerCase().trim()
 
     const cohort = new Cohort(data)
     await cohort.save()
@@ -72,34 +64,34 @@ const getCohorts = async (req = request, res = response) => {
 
 const updateCohort = async (req = request, res = response) => {
   try {
-    const { id } = req.params
-    let { code, description, duration, quantity, status, ...body } = req.body
-
-    if (code) {
-      code = code.trim().toUpperCase()
-
-      const cohortBD = await Cohort.findOne({ code })
-      if (cohortBD) {
-        return res.status(400).json({
-          msg: `La cohorte ${cohortBD.code} ya existe`,
-        })
-      }
-      data.code = code
-    }
+    const {
+      careers,
+      code,
+      createdAt,
+      description,
+      duration,
+      img,
+      participants,
+      quantity,
+      ...body
+    } = req.body
 
     const data = {
       code,
       user: req.authenticatedUser.id,
-      modifiedAt: DateTime.now(),
-      careers: req.careersDB,
-      participants: req.usersDB,
+      updatedAt: DateTime.now(),
     }
 
-    if (description) data.description = description
+    if (careers) data.careers = careers
+    if (code) data.code = code
+    if (description) data.description = description.toLowerCase().trim()
     if (duration) data.duration = duration
     if (quantity) data.quantity = quantity
+    if (participants) data.participants = participants
 
-    const cohort = await Cohort.findByIdAndUpdate(id, data, { new: true })
+    const cohort = await Cohort.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    })
 
     res.status(200).json({
       cohort,
@@ -111,16 +103,13 @@ const updateCohort = async (req = request, res = response) => {
 
 const deleteCohort = async (req = request, res = response) => {
   try {
-    const cohort = await Cohort.findByIdAndUpdate(
+    const deletedCohort = await Cohort.findByIdAndUpdate(
       req.params.id,
-      {
-        status: false,
-        updatedAt: DateTime.now(),
-      },
+      { status: false, updatedAt: DateTime.now() },
       { new: true }
     )
     res.status(200).json({
-      cohort,
+      deletedCohort,
     })
   } catch (error) {
     handlerErrorServer(error)

@@ -1,8 +1,6 @@
 const { check, body } = require('express-validator')
-const { response, request } = require('express')
 
-const { Career } = require('../models')
-const { isObjectId, serverErrorHandler, message } = require('../helpers')
+const { message } = require('../helpers')
 const {
   careerByIdExists,
   coursesByIdsExist,
@@ -11,46 +9,6 @@ const {
 const { isRole } = require('./validate-roles')
 const { validateFields } = require('./validate-fields')
 const { validateJWT } = require('./validate-jwt')
-
-const validateCareers = async (req = request, res = response, next) => {
-  try {
-    const { careers: careersIds } = req.body
-
-    if (careersIds) {
-      const invalidIds = careersIds.filter((careerId) => {
-        if (!isObjectId(careerId)) {
-          return careerId
-        }
-      })
-
-      if (invalidIds.length > 0) {
-        return res.status(400).json({
-          msg: 'Debe ser id de mongo válidos',
-          invalidIds,
-        })
-      }
-
-      const careersDB = await Career.find({ _id: { $in: careersIds } })
-      const careersIdsDB = careersDB.map((careerDB) => careerDB._id.valueOf())
-      const careersIdsNotFound = careersIds.filter((careerId) => {
-        if (!careersIdsDB.includes(careerId)) {
-          return careerId
-        }
-      })
-
-      if (careersIdsNotFound.length > 0) {
-        return res.status(400).json({
-          msg: 'Las siguiente carreras no existen en la BD',
-          careersIdsNotFound,
-        })
-      }
-      req.careersDB = careersDB
-    }
-    next()
-  } catch (error) {
-    serverErrorHandler(error, res)
-  }
-}
 
 const createCareerCheck = () => {
   return [
@@ -158,8 +116,7 @@ const deleteCareerCheck = () => {
 }
 
 module.exports = {
-  validateCareers,
   createCareerCheck,
-  updateCareerCheck,
   deleteCareerCheck,
+  updateCareerCheck,
 }

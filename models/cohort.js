@@ -17,7 +17,7 @@ const CohortSchema = Schema({
     type: Number,
     required: [true, 'La cantidad es requerida'],
   },
-  imgUrl: {
+  img: {
     type: String,
   },
   careers: {

@@ -24,15 +24,7 @@ const productByIdExists = async (id = '') => {
  * Validar contra la BD de artículos
  */
 
-const cohortByIdExists = async (id = '') => {
-  const cohortExists = await Cohort.findById(id)
-  if (!cohortExists) {
-    throw new Error(`La cohorte con id '${id}' no existe en la base de datos`)
-  }
-}
-
 module.exports = {
   categoryByIdExists,
-  cohortByIdExists,
   productByIdExists,
 }
