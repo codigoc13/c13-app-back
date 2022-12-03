@@ -6,7 +6,8 @@ const { serverErrorHandler } = require('../helpers/server-error-handler')
 
 const createCareer = async (req = request, res = response) => {
   try {
-    const { name, description, status, img, updatedAt, ...body } = req.body
+    const { name, description, status, img, updatedAt, courses, ...body } =
+      req.body
 
     const data = {
       ...body,
@@ -15,6 +16,7 @@ const createCareer = async (req = request, res = response) => {
       name: name.toLowerCase().trim(),
       user: req.authenticatedUser.id,
     }
+    if (courses) data.courses = [...new Set(courses)]
 
     const career = new Career(data)
     await career.save()
@@ -75,7 +77,7 @@ const updateCareer = async (req = request, res = response) => {
     if (duration) data.duration = duration
     if (maxCapacity) data.maxCapacity = maxCapacity
     if (minRequired) data.minRequired = minRequired
-    if (courses) data.courses = courses
+    if (courses) data.courses = data.courses = [...new Set(courses)]
 
     const career = await Career.findByIdAndUpdate(req.params.id, data, {
       new: true,
