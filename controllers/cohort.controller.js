@@ -7,14 +7,17 @@ const { isObjectId } = require('../helpers')
 
 const createCohort = async (req = request, res = response) => {
   try {
-    const { description, status, ...body } = req.body
+    const { description, status, careers, participants, ...body } = req.body
 
     const data = {
       ...body,
       createdAt: DateTime.now(),
       user: req.authenticatedUser.id,
     }
+
+    if (careers) data.careers = [...new Set(careers)]
     if (description) data.description = description.toLowerCase().trim()
+    if (participants) data.participants = [...new Set(participants)]
 
     const cohort = new Cohort(data)
     await cohort.save()
@@ -82,12 +85,12 @@ const updateCohort = async (req = request, res = response) => {
       updatedAt: DateTime.now(),
     }
 
-    if (careers) data.careers = careers
+    if (careers) data.careers = [...new Set(careers)]
     if (code) data.code = code
     if (description) data.description = description.toLowerCase().trim()
     if (duration) data.duration = duration
+    if (participants) data.participants = [...new Set(participants)]
     if (quantity) data.quantity = quantity
-    if (participants) data.participants = participants
 
     const cohort = await Cohort.findByIdAndUpdate(req.params.id, data, {
       new: true,
