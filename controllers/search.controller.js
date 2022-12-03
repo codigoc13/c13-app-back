@@ -5,7 +5,7 @@ const {
   searchArticles,
   searchArticlesByUser,
   searchCareers,
-  searchCareersByUser,
+  searchCareersByEntities,
   searchCourses,
   searchCoursesByUser,
   searchNovelties,
@@ -16,7 +16,7 @@ const allowedCollections = [
   'articles',
   'articlesByUser',
   'careers',
-  'careersByUser',
+  'careersByEntities',
   'categories',
   'courses',
   'coursesByUser',
@@ -45,8 +45,8 @@ const search = (req = request, res = response) => {
       case 'careers':
         searchCareers(searchTerm, res)
         break
-      case 'careersByUser':
-        searchCareersByUser(searchTerm, res)
+      case 'careersByEntities':
+        searchCareersByEntities(searchTerm, res)
         break
       case 'courses':
         searchCourses(searchTerm, res)

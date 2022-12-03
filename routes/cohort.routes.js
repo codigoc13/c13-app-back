@@ -6,6 +6,7 @@ const {
   updateCohort,
   deleteCohort,
   search,
+  searchByEntities,
 } = require('../controllers/cohort.controller')
 const { cohortByIdExists } = require('../helpers/db-validators')
 const { validateParticipants } = require('../middlewares/validate-participants')
@@ -32,8 +33,6 @@ router.delete('/:id', deleteCohortCheck(), deleteCohort)
 
 router.get('/search/:term', getCohortCheck(), search)
 
-// router.get('/search/byCourse/:term', getCohortCheck(), getCohorts)
-
-// router.get('/search/byParticipan/:term', getCohortCheck(), getCohorts)
+router.get('/search/byEntities/:term', getCohortCheck(), searchByEntities)
 
 module.exports = router

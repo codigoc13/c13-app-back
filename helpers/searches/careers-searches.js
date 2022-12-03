@@ -81,7 +81,7 @@ const searchCareers = async (searchTerm = '', res = response) => {
   }
 }
 
-const searchCareersByUser = async (searchTerm = '', res = response) => {
+const searchCareersByEntities = async (searchTerm = '', res = response) => {
   try {
     if (isObjectId(searchTerm)) {
       const career = await Career.find({
@@ -102,12 +102,8 @@ const searchCareersByUser = async (searchTerm = '', res = response) => {
     })
     const usersIds = users.map((user) => user.id)
 
-    console.log(usersIds)
-
     const courses = await Course.find({ name: regex })
     const coursesIds = courses.map((course) => course.id)
-
-    console.log(coursesIds)
 
     const careers = await Career.find({
       $or: [
@@ -133,4 +129,4 @@ const searchCareersByUser = async (searchTerm = '', res = response) => {
   }
 }
 
-module.exports = { searchCareers, searchCareersByUser }
+module.exports = { searchCareers, searchCareersByEntities }

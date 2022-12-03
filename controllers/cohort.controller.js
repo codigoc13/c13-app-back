@@ -1,7 +1,7 @@
 const { DateTime } = require('luxon')
 const { request, response } = require('express')
 
-const { Cohort } = require('../models')
+const { Cohort, User, Career } = require('../models')
 const { serverErrorHandler } = require('../helpers/server-error-handler')
 const { isObjectId } = require('../helpers')
 
@@ -204,10 +204,72 @@ const search = async (req = request, res = response) => {
   }
 }
 
+const searchByEntities = async (req = request, res = response) => {
+  try {
+    const { term: searchTerm } = req.params
+
+    if (isObjectId(searchTerm)) {
+      const cohort = await Cohort.find({
+        $or: [
+          { user: searchTerm },
+          { careers: { _id: searchTerm } },
+          { participants: { _id: searchTerm } },
+        ],
+        $and: { status: true },
+      })
+        .populate('user')
+        .populate('careers')
+        .populate('participants')
+      return res.status(200).json({
+        queriedFields: ['user.id', 'participants.*.id', 'careers.*.id'],
+        results: cohort ? [cohort] : [],
+      })
+    }
+
+    const regex = new RegExp(searchTerm, 'i')
+
+    const users = await User.find({
+      $or: [{ firstName: regex }, { lastName: regex }, { username: regex }],
+    })
+    const usersIds = users.map((user) => user.id)
+
+    const careers = await Career.find({ name: regex })
+    const careersIds = careers.map((career) => career.id)
+
+    const cohorts = await Cohort.find({
+      $or: [
+        { user: { $in: usersIds }, status: true },
+        { careers: { $in: careersIds }, status: true },
+        { participants: { $in: usersIds }, status: true },
+      ],
+    })
+      .populate('user')
+      .populate('careers')
+      .populate('participants')
+
+    res.status(200).json({
+      queriedFields: [
+        'user.firstName',
+        'user.lastName',
+        'user.username',
+        'participants.firstName',
+        'participants.lastName',
+        'participants.username',
+        'careers.name',
+      ],
+      quantity: cohorts.length,
+      cohorts,
+    })
+  } catch (error) {
+    serverErrorHandler(error, res)
+  }
+}
+
 module.exports = {
   createCohort,
-  getCohorts,
-  updateCohort,
   deleteCohort,
+  getCohorts,
   search,
+  searchByEntities,
+  updateCohort,
 }
