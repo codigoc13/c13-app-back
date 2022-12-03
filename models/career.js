@@ -52,11 +52,10 @@ const CareerSchema = Schema({
 CareerSchema.methods.toJSON = function () {
   const { __v, _id, createdAt, updatedAt, status, ...career } = this.toObject()
   career.id = _id
-  career.createdAt = DateTime.fromISO(createdAt.toISOString())
 
-  if (updatedAt) {
-    career.updatedAt = DateTime.fromISO(updatedAt.toISOString())
-  }
+  career.createdAt = DateTime.fromJSDate(createdAt,{zone: 'America/Bodota'})
+
+  if(updatedAt) career.updatedAt = DateTime.fromJSDate(updatedAt,{zone:'America/Bodota'})
 
   const { _id: _uId, password, __v: __uV, ...user } = career.user
   user.id = _uId
